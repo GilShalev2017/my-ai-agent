@@ -1,0 +1,14 @@
+﻿[
+  {
+    "channelId": "CNN",
+    "startTime": "2025-07-31T18:00:00Z",
+    "text": "President Trump discussed his peace plan with several leaders...",
+    "embedding": [ 0.012, -0.337, 0.118, 0.003, 0.015 ]
+  },
+  {
+    "channelId": "BBC",
+    "startTime": "2025-07-31T20:00:00Z",
+    "text": "The peace summit in Geneva featured various countries including...",
+    "embedding": [ 0.022, -0.145, 0.092, 0.010, 0.019 ]
+  }
+]

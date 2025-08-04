@@ -1,0 +1,35 @@
+# Visual Studio
+.vs/
+*.sln.ide/
+*.suo
+*.user
+*.userosscache
+*.sage
+*.tmp
+*.vsp
+*.vspx
+*.psess
+*.vsch
+*.sln.docstates
+*.vshost.exe
+*.vshost.exe.config
+
+# Build and obj folders
+bin/
+obj/
+
+# Package Manager
+packages/
+node_modules/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# Dotnet CLI
+.dotnet/
+
+# ASP.NET Core Secrets
+appsettings.json

@@ -1,0 +1,6 @@
+@ActusAgentService_HostAddress = http://localhost:5270
+
+GET {{ActusAgentService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
