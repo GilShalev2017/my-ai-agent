@@ -5,6 +5,7 @@ namespace ActusAgentService.Services
 {
     public class QueryIntentContext
     {
+        public string OriginalQuery { get; set; } = string.Empty;
         public List<string> Intents { get; set; } = new();
         public List<string> Entities { get; set; } = new();
         public List<string> Dates { get; set; } = new();  // Could be normalized later
@@ -29,21 +30,40 @@ namespace ActusAgentService.Services
             sb.AppendLine("- dates: specific days or ranges relevant to the query");
             sb.AppendLine("- sources: which data sources to use (alerts, transcripts, logs, email, etc.)");
             sb.AppendLine();
-            sb.AppendLine("Respond in this JSON format:");
+            sb.AppendLine("Respond in this **exact JSON format**, no explanations or commentary:");
             sb.AppendLine("{");
-            sb.AppendLine("  \"intents\": [...],");
-            sb.AppendLine("  \"entities\": [...],");
-            sb.AppendLine("  \"dates\": [...],");
-            sb.AppendLine("  \"sources\": [...]");
+            sb.AppendLine("  \"intents\": [\"...\"],");
+            sb.AppendLine("  \"entities\": [\"...\"],");
+            sb.AppendLine("  \"dates\": [\"...\"],");
+            sb.AppendLine("  \"sources\": [\"...\"]");
             sb.AppendLine("}");
             sb.AppendLine();
             sb.AppendLine($"Query: {userQuery}");
 
             var systemPrompt = sb.ToString();
+
             var jsonResponse = await _openAiService.GetChatCompletionAsync(systemPrompt);
 
-            return JsonSerializer.Deserialize<QueryIntentContext>(jsonResponse);
+            try
+            {
+                var context = JsonSerializer.Deserialize<QueryIntentContext>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (context == null)
+                {
+                    throw new Exception("Deserialized context is null. Raw response: " + jsonResponse);
+                }
+
+                return context;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to parse model response as JSON. Raw content:\n" + jsonResponse, ex);
+            }
         }
+
 
         //public async Task<QueryIntentContext> ExtractAsync(string userQuery)
         //{

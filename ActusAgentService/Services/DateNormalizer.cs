@@ -1,4 +1,6 @@
-﻿namespace ActusAgentService.Services
+﻿using System.Text.RegularExpressions;
+
+namespace ActusAgentService.Services
 {
     public class DateNormalizer
     {
@@ -35,12 +37,15 @@
 
         private string TryParseDate(string phrase)
         {
-            // Try parse a direct date (e.g., "July 30")
-            if (DateTime.TryParse(phrase, out var date))
+            var cleaned = Regex.Replace(phrase, @"\b(\d{1,2})(st|nd|rd|th)\b", "$1", RegexOptions.IgnoreCase);
+            Console.WriteLine($"Trying to parse cleaned date phrase: '{cleaned}'");
+
+            if (DateTime.TryParse(cleaned, out var date))
                 return date.ToString("yyyy-MM-dd");
 
             return string.Empty;
         }
+
     }
 
     public static class DateTimeExtensions

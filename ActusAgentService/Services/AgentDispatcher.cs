@@ -2,26 +2,14 @@
 {
     public class AgentDispatcher
     {
-        private readonly TranscriptRepository _repo;
-
-        public AgentDispatcher(TranscriptRepository repo, EmbeddingProvider embeddingProvider) {
-            _repo = repo;
-        }
-
-        public async Task<string> ExecutePlanAsync(string userQuery, Dictionary<string, object> plan)
+        public async Task<string> ExecuteAsync(QueryIntentContext context, QueryPlan plan, string llmResponse)
         {
-            var intent = plan["intent"]?.ToString();
-            var topic = plan["topic"]?.ToString() ?? "";
-            var date = plan["date"]?.ToString() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
-
-            var data = await _repo.GetTranscriptsByTopicAndDateAsync(userQuery, topic, date);
-            
-            //SemanticSearchAsync
+            var intent = plan.Intents.FirstOrDefault() ?? "unknown";
 
             return intent switch
             {
-                "summarization" => $"[SUMMARY of {data.Count} transcripts]",
-                "emotion_analysis" => $"[EMOTION results on {data.Count} transcripts]",
+                "summarization" => $"[SUMMARY of {plan.TranscriptLines.Count} transcripts]\n\n{llmResponse}",
+                "emotion_analysis" => $"[EMOTION results on {plan.TranscriptLines.Count} transcripts]\n\n{llmResponse}",
                 _ => "[Unsupported intent]"
             };
         }

@@ -1,53 +1,50 @@
 ﻿using ActusAgentService.Models;
+using Microsoft.Extensions.AI;
+using MongoDB.Driver;
 using System.Text.Json;
 
 namespace ActusAgentService.Services
 {
     public class TranscriptRepository
     {
-        //private readonly string _jsonPath;
         private readonly EmbeddingProvider _embeddingProvider;
+        private readonly IMongoCollection<Transcript> _collection;
 
-        public TranscriptRepository(EmbeddingProvider embeddingProvider)
+        public TranscriptRepository(EmbeddingProvider embeddingProvider, IMongoDatabase db)
         {
-            //_jsonPath = jsonPath;
-            _embeddingProvider = embeddingProvider!;
-        }
-
-        //public async Task<List<Transcript>> LoadAllTranscriptsAsync()
-        //{
-
-        //    if (!File.Exists(_jsonPath)) return new List<Transcript>();
-
-        //    var json = await File.ReadAllTextAsync(_jsonPath);
-
-        //    return JsonSerializer.Deserialize<List<Transcript>>(json);
-        //}
-
-        public async Task<List<Transcript>> SearchTranscripts(string userQuery)
-        {
-            // Step 1: Embed the user query (using OpenAI Embedding API)
-            var queryVector = await _embeddingProvider.EmbedAsync(userQuery);
-
-            // Step 2: Search your transcript embeddings index (e.g., using Pinecone, Qdrant, or custom DB)
-            
-            // transcriptEmbeddingIndex.FindNearest(queryVector, topK: 10);
-           
-            return new List<Transcript>();
+            _embeddingProvider = embeddingProvider;
+            _collection = db.GetCollection<Transcript>("transcripts");
         }
 
         public async Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date)
         {
-            // Await the asynchronous operation.
-            var queryVector = await _embeddingProvider.EmbedAsync(userQuery);
+            var queryVector = await _embeddingProvider.EmbedAsync(userQuery); // vector of floats
 
-            // Simulate filtering by topic/date.
-            // The C# compiler automatically wraps this List<string> in a Task<List<string>>
-            // because the method is declared with 'async'.
-            return new List<string> {
-                $"Transcript about {topic} on {date}",
-                $"Another {topic} segment on {date}"
-            };
+            var allDocs = await _collection
+                .Find(d => d.Topic == topic && d.Date == date)
+                .ToListAsync();
+
+            return allDocs
+                .Select(d => new {
+                    text = d.Text,
+                    similarity = CosineSimilarity(queryVector, d.Embedding)
+                })
+                .OrderByDescending(x => x.similarity)
+                .Take(10)
+                .Select(x => x.text)
+                .ToList();
+        }
+
+        private float CosineSimilarity(float[] v1, float[] v2)
+        {
+            float dot = 0, mag1 = 0, mag2 = 0;
+            for (int i = 0; i < v1.Length; i++)
+            {
+                dot += v1[i] * v2[i];
+                mag1 += v1[i] * v1[i];
+                mag2 += v2[i] * v2[i];
+            }
+            return dot / (float)(Math.Sqrt(mag1) * Math.Sqrt(mag2));
         }
     }
 

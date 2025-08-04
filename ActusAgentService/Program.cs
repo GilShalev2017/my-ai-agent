@@ -1,5 +1,6 @@
 using ActusAgentService.Services;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
 using System.Numerics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,13 +15,18 @@ builder.Services.AddControllers();
 //    opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 //}); 
 
+builder.Services.AddSingleton<EntityExtractor>();
+builder.Services.AddSingleton<DateNormalizer>();
 builder.Services.AddSingleton<EmbeddingProvider>();
 builder.Services.AddSingleton<TranscriptRepository>();
+
+builder.Services.AddSingleton<PlanGenerator>();
+builder.Services.AddSingleton<PromptComposer>();
 builder.Services.AddSingleton<OpenAiService>();
-builder.Services.AddSingleton<IntentDetector>();
-builder.Services.AddSingleton<PlanGeneratorAgent>();
+
+
+
 builder.Services.AddSingleton<AgentDispatcher>();
-builder.Services.AddSingleton<EntityExtractor>();
 
 builder.Services.AddHttpClient<OpenAiService>(client =>
 {
@@ -36,6 +42,17 @@ builder.Services.AddHttpClient<OpenAiService>(client =>
     client.Timeout = TimeSpan.FromMinutes(5);
 });
 
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("MongoDb");
+    return new MongoClient(connectionString);
+});
+
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+{
+    var client = sp.GetRequiredService<IMongoClient>();
+    return client.GetDatabase("YourDatabaseName"); // Replace with your DB name
+});
 
 var app = builder.Build();
 

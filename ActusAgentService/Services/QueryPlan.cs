@@ -17,6 +17,7 @@ namespace ActusAgentService.Services
         public List<string> TranscriptLines { get; set; }
 
         public string FinalPrompt { get; set; }
+        public string AdditionalInstructions { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public bool IsExpired => (DateTime.UtcNow - CreatedAt).TotalMinutes > 10; // optional TTL
