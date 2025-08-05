@@ -27,7 +27,7 @@ while (true)
         try
         {
             // Post the query to the agent API.
-            var response = await client.PostAsJsonAsync("/api/agent/ask", query);
+            var response = await client.PostAsJsonAsync("/api/query/ask", query);
   
             response.EnsureSuccessStatusCode(); // Throws an exception for non-2xx status codes.
 

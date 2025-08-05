@@ -15,7 +15,6 @@ namespace ActusAgentService.Controllers
     public class QueryController : ControllerBase
     {
         private readonly IEntityExtractor _entityExtractor;
-        private readonly IDateNormalizer _dateNormalizer;
         private readonly IPlanGenerator _planGenerator;
         private readonly IPromptComposer _promptComposer;
         private readonly IOpenAiService _openAiService;
@@ -29,7 +28,6 @@ namespace ActusAgentService.Controllers
                                IAgentDispatcher agentDispatcher)
         {
             _entityExtractor = entityExtractor;
-            _dateNormalizer = dateNormalizer;
             _planGenerator = planGenerator;
             _promptComposer = promptComposer;
             _agentDispatcher = agentDispatcher;

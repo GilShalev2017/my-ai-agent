@@ -5,15 +5,27 @@ using System.Text.Json;
 
 namespace ActusAgentService.Services
 {
-    public class TranscriptRepository
+    public interface IContentService
     {
-        private readonly EmbeddingProvider _embeddingProvider;
+        Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date);
+
+        Task<List<string>>GetAlertsByDateAsync(string date);
+    }
+
+    public class ContentService : IContentService
+    {
+        private readonly IEmbeddingProvider _embeddingProvider;
         private readonly IMongoCollection<Transcript> _collection;
 
-        public TranscriptRepository(EmbeddingProvider embeddingProvider, IMongoDatabase db)
+        public ContentService(IEmbeddingProvider embeddingProvider, IMongoDatabase db)
         {
             _embeddingProvider = embeddingProvider;
             _collection = db.GetCollection<Transcript>("transcripts");
+        }
+
+        public Task<List<string>> GetAlertsByDateAsync(string date)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date)

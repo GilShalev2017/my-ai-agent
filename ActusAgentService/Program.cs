@@ -15,18 +15,14 @@ builder.Services.AddControllers();
 //    opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 //}); 
 
-builder.Services.AddSingleton<EntityExtractor>();
-builder.Services.AddSingleton<DateNormalizer>();
-builder.Services.AddSingleton<EmbeddingProvider>();
-builder.Services.AddSingleton<TranscriptRepository>();
-
-builder.Services.AddSingleton<PlanGenerator>();
-builder.Services.AddSingleton<PromptComposer>();
-builder.Services.AddSingleton<OpenAiService>();
-
-
-
-builder.Services.AddSingleton<AgentDispatcher>();
+builder.Services.AddScoped<IEntityExtractor, EntityExtractor>();
+builder.Services.AddSingleton<IDateNormalizer, DateNormalizer>();
+builder.Services.AddScoped<IEmbeddingProvider, EmbeddingProvider>();
+builder.Services.AddScoped<IContentService, ContentService>();
+builder.Services.AddScoped<IPlanGenerator, PlanGenerator>();
+builder.Services.AddSingleton<IPromptComposer, PromptComposer>();
+builder.Services.AddScoped<IOpenAiService, OpenAiService>();
+builder.Services.AddScoped<IAgentDispatcher, AgentDispatcher>();
 
 builder.Services.AddHttpClient<OpenAiService>(client =>
 {

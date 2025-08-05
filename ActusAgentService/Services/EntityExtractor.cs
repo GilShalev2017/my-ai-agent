@@ -8,12 +8,15 @@ namespace ActusAgentService.Services
     {
         Task<QueryIntentContext> ExtractAsync(string userQuery);
     }
+    /// <summary>
+    /// Extract QueryIntentContext from user query
+    /// </summary>
     public class EntityExtractor : IEntityExtractor
     {
-        private readonly OpenAiService _openAiService;
+        private readonly IOpenAiService _openAiService;
         private readonly IDateNormalizer _dateNormalizer;
 
-        public EntityExtractor(OpenAiService openAiService, IDateNormalizer dateNormalizer)
+        public EntityExtractor(IOpenAiService openAiService, IDateNormalizer dateNormalizer)
         {
             _openAiService = openAiService;
             _dateNormalizer = dateNormalizer;

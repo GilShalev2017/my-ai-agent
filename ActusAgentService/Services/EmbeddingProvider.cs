@@ -22,7 +22,12 @@ namespace ActusAgentService.Services
     //  }
     //}
 
-    public class EmbeddingProvider
+    public interface IEmbeddingProvider
+    {
+        Task<float[]> EmbedAsync(string input);
+    }
+
+    public class EmbeddingProvider : IEmbeddingProvider
     {
         private readonly string _apiKey;
         private readonly HttpClient _httpClient;
@@ -80,6 +85,7 @@ namespace ActusAgentService.Services
             return [];
 
         }
+
     }
 
 }

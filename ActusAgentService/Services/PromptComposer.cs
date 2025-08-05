@@ -7,12 +7,16 @@ namespace ActusAgentService.Services
     {
         string Compose(QueryIntentContext context, QueryPlan plan);
     }
-
+    /// <summary>
+    /// Turn context + plan into a smart LLM prompt
+    /// </summary>
     public class PromptComposer: IPromptComposer
     {
         public string Compose(QueryIntentContext context, QueryPlan plan)
         {
             var sb = new StringBuilder();
+
+            // System message
             sb.AppendLine("You are an expert assistant that analyzes media data.");
             sb.AppendLine("--- CONTEXT ---");
             sb.AppendLine($"Intents: {string.Join(", ", context.Intents)}");
@@ -20,6 +24,7 @@ namespace ActusAgentService.Services
             sb.AppendLine($"Dates: {string.Join(", ", context.Dates)}");
             sb.AppendLine($"Sources: {string.Join(", ", context.Sources)}");
 
+            // Transcripts
             if (plan.TranscriptLines.Any())
             {
                 sb.AppendLine("--- TRANSCRIPTS ---");
@@ -27,14 +32,46 @@ namespace ActusAgentService.Services
                     sb.AppendLine("- " + line);
             }
 
-            if (!string.IsNullOrWhiteSpace(plan.FinalPrompt))
+            // Alerts
+            if (plan.Alerts.Any())
             {
-                sb.AppendLine("--- TASK ---");
-                sb.AppendLine(plan.FinalPrompt);
+                sb.AppendLine("--- ALERTS ---");
+                foreach (var alert in plan.Alerts)
+                    sb.AppendLine("- " + alert);
             }
+
+            // Task
+            sb.AppendLine("--- TASK ---");
+            string task = GenerateTaskDescription(context.Intents, context.Entities);
+            sb.AppendLine(task);
 
             return sb.ToString();
         }
-    }
 
+        private string GenerateTaskDescription(List<string> intents, List<Entity> entities)
+        {
+            if (intents.Contains("Summarize", StringComparer.OrdinalIgnoreCase))
+            {
+                return "Please summarize the key topics and insights based on the above content.";
+            }
+
+            if (intents.Contains("DetectKeywords", StringComparer.OrdinalIgnoreCase))
+            {
+                return "Please identify important or recurring keywords related to the entities.";
+            }
+
+            if (intents.Contains("EmotionAnalysis", StringComparer.OrdinalIgnoreCase))
+            {
+                return "Analyze the emotional tone or sentiment in the above transcripts.";
+            }
+
+            if (intents.Contains("CheckAlerts", StringComparer.OrdinalIgnoreCase))
+            {
+                return "Analyze the transcripts and alerts for potential issues or warnings.";
+            }
+
+            // Default fallback
+            return "Provide an analysis based on the above context and transcripts.";
+        }
+    }
 }
