@@ -1,3 +1,4 @@
+using ActusAgentService.DB;
 using ActusAgentService.Services;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
@@ -15,6 +16,7 @@ builder.Services.AddControllers();
 //    opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 //}); 
 
+builder.Services.AddSingleton<IAiJobResultRepositoryExtended, AiJobResultRepositoryExtended>();
 builder.Services.AddScoped<IEntityExtractor, EntityExtractor>();
 builder.Services.AddSingleton<IDateNormalizer, DateNormalizer>();
 builder.Services.AddScoped<IEmbeddingProvider, EmbeddingProvider>();

@@ -1,10 +1,7 @@
 ﻿using ActusAgentService.Models;
+using ActusAgentService.Models.ActIntelligence;
 using ActusAgentService.Services;
-using Azure;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using System.Numerics;
 using System.Text.Json;
 
 namespace ActusAgentService.Controllers
@@ -20,20 +17,25 @@ namespace ActusAgentService.Controllers
         private readonly IOpenAiService _openAiService;
         private readonly IAgentDispatcher _agentDispatcher;
 
+        private readonly IContentService _contentService;
+
         public QueryController(IEntityExtractor entityExtractor,
                                IDateNormalizer dateNormalizer,
                                IPlanGenerator planGenerator,
                                IPromptComposer promptComposer,
                                IOpenAiService openAiService,
-                               IAgentDispatcher agentDispatcher)
+                               IAgentDispatcher agentDispatcher,
+                               IContentService contentService)
         {
             _entityExtractor = entityExtractor;
             _planGenerator = planGenerator;
             _promptComposer = promptComposer;
             _agentDispatcher = agentDispatcher;
             _openAiService = openAiService;
+
+            _contentService = contentService;
         }
-        
+
         [HttpPost("ask")]
         public async Task<IActionResult> Ask([FromBody] string userQuery)
         {
@@ -48,7 +50,7 @@ namespace ActusAgentService.Controllers
             string prompt = _promptComposer.Compose(context, plan);
 
             Console.WriteLine("Prompt:\n" + prompt);
-            
+
             var response = await _openAiService.GetChatCompletionAsync(prompt);
 
             Console.WriteLine("Response:\n" + response);
@@ -58,29 +60,13 @@ namespace ActusAgentService.Controllers
             return Ok(result);
         }
 
-
-        private float Dot(float[] a, float[] b) => a.Zip(b, (x, y) => x * y).Sum();
+        [HttpPost("agent-transcripts")]
+        public async Task<List<JobResult>> GetFilteredJobRequests([FromBody] JobResultFilter filter)
+        {
+            return await _contentService.GetFilteredTranscriptsAsync(filter);
+        }
     }
-
-    //foreach (var intent in context.Intents)
-    //{
-    //    switch (intent.ToLowerInvariant())
-    //    {
-    //        case "summarization":
-    //            // handle summarization
-    //            break;
-    //        case "emotion_analysis":
-    //            // handle emotion analysis
-    //            break;
-    //        default:
-    //            // Let GPT handle unknown intents as free-form prompts
-    //            var prompt = BuildDynamicPrompt(intent, context.Entities, context.Dates);
-    //    var answer = await _openAiService.GetChatCompletionAsync(prompt);
-    //            return answer;
-    //    }
-    //}
 }
-
 //OPTION A WITH EMEDDING
 /*
 var transcripts = await _repo.LoadAllTranscriptsAsync();
