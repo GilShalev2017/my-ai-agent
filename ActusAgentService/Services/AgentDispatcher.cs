@@ -1,17 +1,23 @@
-﻿namespace ActusAgentService.Services
-{
-    public class AgentDispatcher
-    {
-        public async Task<string> ExecuteAsync(QueryIntentContext context, QueryPlan plan, string llmResponse)
-        {
-            var intent = plan.Intents.FirstOrDefault() ?? "unknown";
+﻿using ActusAgentService.Models;
 
-            return intent switch
+namespace ActusAgentService.Services
+{
+    public interface IAgentDispatcher
+    {
+        Task<string> ExecuteAsync(QueryIntentContext context, QueryPlan plan, string llmResponse);
+    }
+
+    public class AgentDispatcher : IAgentDispatcher
+    {
+        public Task<string> ExecuteAsync(QueryIntentContext context, QueryPlan plan, string llmResponse)
+        {
+            var intent = plan.Intents.FirstOrDefault()?.ToLower() ?? "unknown";
+            return Task.FromResult(intent switch
             {
-                "summarization" => $"[SUMMARY of {plan.TranscriptLines.Count} transcripts]\n\n{llmResponse}",
-                "emotion_analysis" => $"[EMOTION results on {plan.TranscriptLines.Count} transcripts]\n\n{llmResponse}",
-                _ => "[Unsupported intent]"
-            };
+                "summarization" => $"[SUMMARY] {llmResponse}",
+                "emotion_analysis" => $"[EMOTION ANALYSIS] {llmResponse}",
+                _ => $"[UNRECOGNIZED INTENT: {intent}]\n{llmResponse}"
+            });
         }
     }
 

@@ -1,10 +1,16 @@
-﻿using System.Security.Cryptography;
+﻿using ActusAgentService.Models;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
 namespace ActusAgentService.Services
 {
-    public class PlanGenerator
+    public interface IPlanGenerator
+    {
+        Task<QueryPlan> GeneratePlanAsync(QueryIntentContext context);
+    }
+
+    public class PlanGenerator : IPlanGenerator
     {
         private readonly TranscriptRepository _repo;
 
@@ -19,37 +25,29 @@ namespace ActusAgentService.Services
             {
                 QueryHash = ComputeQueryHash(context.OriginalQuery),
                 UserQuery = context.OriginalQuery,
-                Intents = context.Intents ?? new List<string>(),
-                Entities = context.Entities ?? new List<string>(),
-                Dates = context.Dates ?? new List<string>(),
-                Sources = context.Sources ?? new List<string>(), // optional: depends on extraction
-                Alerts = new List<string>(), // will populate later if needed
-                TranscriptLines = new List<string>(), // will populate below
+                Intents = context.Intents ?? new(),
+                Entities = context.Entities?.Select(e => e.EntityName).ToList() ?? new(),
+                Dates = context.Dates?.Select(d => d.Date).ToList() ?? new(),
+                Sources = context.Sources?.Select(s => s.Source).ToList() ?? new(),
+                Alerts = new(),
+                TranscriptLines = new(),
                 CreatedAt = DateTime.UtcNow
             };
 
-            // Get first relevant topic and date
             var topic = plan.Entities.FirstOrDefault() ?? "";
             var date = plan.Dates.FirstOrDefault() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
 
-            // Get transcripts (or alerts if needed)
-            var transcripts = await _repo.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date);
-            plan.TranscriptLines = transcripts;
+            plan.TranscriptLines = await _repo.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date);
 
-            // Compose final prompt (optional here or outside)
-            plan.FinalPrompt = $"Summarize the following transcripts related to {topic} on {date}:\n" +
-                               string.Join("\n", plan.TranscriptLines);
+            plan.FinalPrompt = $"Summarize transcripts for topic '{topic}' on {date}: {string.Join("\n", plan.TranscriptLines)} ";
 
             return plan;
         }
 
-        private string ComputeQueryHash(string query)
+        private static string ComputeQueryHash(string query)
         {
             using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(query);
-            var hash = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
+            return Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(query)));
         }
-
     }
 }

@@ -1,8 +1,15 @@
-﻿using System.Text.RegularExpressions;
+﻿using ActusAgentService.Models;
+using System.Text.RegularExpressions;
 
 namespace ActusAgentService.Services
 {
-    public class DateNormalizer
+    public interface IDateNormalizer
+    {
+        List<string> Normalize(List<string> datePhrases);
+    }
+
+    public class DateNormalizer : IDateNormalizer
+
     {
         public List<string> Normalize(List<string> datePhrases)
         {

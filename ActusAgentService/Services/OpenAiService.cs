@@ -2,12 +2,17 @@
 
 namespace ActusAgentService.Services
 {
-    public class OpenAiService
+    public interface IOpenAiService
+    {
+        Task<string> GetChatCompletionAsync(string prompt);
+    }
+
+    public class OpenAiService : IOpenAiService
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey = "";
 
-        public OpenAiService(HttpClient httpClient)
+        public OpenAiService()
         {
             var configuration = new ConfigurationBuilder()
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -25,10 +30,11 @@ namespace ActusAgentService.Services
             var body = new
             {
                 model = "gpt-4",
-                messages = new[] {
-                    new { role = "system", content = "You are an assistant that analyzes TV transcript user queries." },
-                    new { role = "user", content = prompt }
-                },
+                messages = new[]
+                {
+                new { role = "system", content = "You are a helpful media assistant." },
+                new { role = "user", content = prompt }
+            },
                 temperature = 0.2
             };
 
@@ -37,11 +43,10 @@ namespace ActusAgentService.Services
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"OpenAI API call failed: {error}");
+                throw new Exception("OpenAI API error: " + error);
             }
 
             var result = await response.Content.ReadFromJsonAsync<JsonElement>();
-
             return result.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
         }
 

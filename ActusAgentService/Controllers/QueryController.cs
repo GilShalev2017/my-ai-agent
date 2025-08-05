@@ -1,4 +1,5 @@
-﻿using ActusAgentService.Services;
+﻿using ActusAgentService.Models;
+using ActusAgentService.Services;
 using Azure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
@@ -10,25 +11,22 @@ namespace ActusAgentService.Controllers
 {
     [ApiController]
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
-    public class AgentController : ControllerBase
+
+    public class QueryController : ControllerBase
     {
-        private readonly EntityExtractor _entityExtractor;
-        private readonly DateNormalizer _dateNormalizer;
-        private readonly PlanGenerator _planGenerator;
-        private readonly PromptComposer _promptComposer;
+        private readonly IEntityExtractor _entityExtractor;
+        private readonly IDateNormalizer _dateNormalizer;
+        private readonly IPlanGenerator _planGenerator;
+        private readonly IPromptComposer _promptComposer;
+        private readonly IOpenAiService _openAiService;
+        private readonly IAgentDispatcher _agentDispatcher;
 
-        
-        private readonly AgentDispatcher _agentDispatcher;
-        private readonly TranscriptRepository _repo;
-        private readonly EmbeddingProvider _embed;
-        private readonly OpenAiService _openAiService;
-
-        public AgentController(EntityExtractor entityExtractor,
-                               DateNormalizer dateNormalizer,
-                               PlanGenerator planGenerator,
-                               PromptComposer promptComposer,
-                               OpenAiService openAiService,
-                               AgentDispatcher agentDispatcher)
+        public QueryController(IEntityExtractor entityExtractor,
+                               IDateNormalizer dateNormalizer,
+                               IPlanGenerator planGenerator,
+                               IPromptComposer promptComposer,
+                               IOpenAiService openAiService,
+                               IAgentDispatcher agentDispatcher)
         {
             _entityExtractor = entityExtractor;
             _dateNormalizer = dateNormalizer;
@@ -45,11 +43,7 @@ namespace ActusAgentService.Controllers
 
             QueryIntentContext context = await _entityExtractor.ExtractAsync(userQuery);
 
-            context.OriginalQuery = userQuery;
-
             Console.WriteLine($"Extracted: {JsonSerializer.Serialize(context)}");
-
-            context.Dates = _dateNormalizer.Normalize(context.Dates);
 
             var plan = await _planGenerator.GeneratePlanAsync(context);
 
@@ -70,6 +64,23 @@ namespace ActusAgentService.Controllers
         private float Dot(float[] a, float[] b) => a.Zip(b, (x, y) => x * y).Sum();
     }
 
+    //foreach (var intent in context.Intents)
+    //{
+    //    switch (intent.ToLowerInvariant())
+    //    {
+    //        case "summarization":
+    //            // handle summarization
+    //            break;
+    //        case "emotion_analysis":
+    //            // handle emotion analysis
+    //            break;
+    //        default:
+    //            // Let GPT handle unknown intents as free-form prompts
+    //            var prompt = BuildDynamicPrompt(intent, context.Entities, context.Dates);
+    //    var answer = await _openAiService.GetChatCompletionAsync(prompt);
+    //            return answer;
+    //    }
+    //}
 }
 
 //OPTION A WITH EMEDDING
