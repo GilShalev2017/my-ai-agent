@@ -1,4 +1,5 @@
 ﻿using ActusAgentService.Models;
+using ActusAgentService.Models.ActIntelligence;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -14,11 +15,11 @@ namespace ActusAgentService.Services
     /// </summary>
     public class PlanGenerator : IPlanGenerator
     {
-        private readonly IContentService _repo;
+        private readonly IContentService _contentService;
 
         public PlanGenerator(IContentService repo)
         {
-            _repo = repo;
+            _contentService = repo;
         }
 
         public async Task<QueryPlan> GeneratePlanAsync(QueryIntentContext context)
@@ -34,25 +35,100 @@ namespace ActusAgentService.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            // Handle multiple topics or fallback
-            var topics = plan.Entities;
-            var date = plan.Dates.FirstOrDefault() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var date = plan.Dates.FirstOrDefault();
 
-            // Collect transcript lines for each topic
-            var allLines = new List<string>();
-            foreach (var topic in topics.DefaultIfEmpty(""))
+            // Build a JobResultFilter using channel ID and start/end time (if possible)
+            var filter = new JobResultFilter
             {
-                var lines = await _repo.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date);
-                allLines.AddRange(lines);
+                Operation = "Transcription"
+            };
+
+            // Set ChannelId if available
+            //if (int.TryParse(plan.Sources.FirstOrDefault(), out var channelId))
+            //{
+            //    filter.ChannelIds.Add(channelId);
+            //}
+
+            // Set Start/End date range
+            if (DateTime.TryParse(date, out var parsedDate))
+            {
+                // Assuming you want to include the whole day
+                filter.Start = parsedDate.Date;
+                filter.End = parsedDate.Date.AddDays(1).AddTicks(-1); // End of the day
+            }
+
+            // Fetch transcripts based on the narrowed filter
+            var transcripts = await _contentService.GetFilteredTranscriptsAsync(filter);
+
+            var allLines = new List<string>();
+
+            foreach (var transcript in transcripts)
+            {
+                if (transcript.Content != null)
+                {
+                    foreach (var line in transcript.Content)
+                    {
+                        if (!string.IsNullOrWhiteSpace(line.Text))
+                        {
+                            allLines.Add(line.Text.Trim());
+                        }
+                    }
+                }
             }
 
             plan.TranscriptLines = allLines.Distinct().ToList();
 
-            // Fetch relevant alerts if any
-            plan.Alerts = await _repo.GetAlertsByDateAsync(date);
+            // Fetch relevant alerts (same date logic)
+            //if (DateTime.TryParse(date, out var alertDate))
+            //{
+            //    plan.Alerts = await _contentService.GetAlertsByDateAsync(alertDate.ToString("yyyy-MM-dd"));
+            //}
 
             return plan;
         }
+
+        //public async Task<QueryPlan> GeneratePlanAsync(QueryIntentContext context)
+        //{
+        //    var plan = new QueryPlan
+        //    {
+        //        QueryHash = ComputeQueryHash(context.OriginalQuery),
+        //        UserQuery = context.OriginalQuery,
+        //        Intents = context.Intents ?? new(),
+        //        Entities = context.Entities?.Select(e => e.EntityName).ToList() ?? new(),
+        //        Dates = context.Dates?.Select(d => d.Date).ToList() ?? new(),
+        //        Sources = context.Sources?.Select(s => s.Source).ToList() ?? new(),
+        //        CreatedAt = DateTime.UtcNow
+        //    };
+
+        //    // Handle multiple topics or fallback
+        //    //var topics = plan.Entities;
+        //    var date = plan.Dates.FirstOrDefault() ?? DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+        //    // Collect transcript lines for each topic
+        //    var allLines = new List<string>();
+
+        //    JobResultFilter jrf = new JobResultFilter() { Operation = "Transcription" };
+
+        //    var transcripts = await _contentService.GetFilteredTranscriptsAsync(jrf);
+
+        //    //foreach (var topic in topics.DefaultIfEmpty(""))
+        //    //{
+        //    //    var lines = await _contentService.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date);
+
+        //    //    JobResultFilter jrf = new JobResultFilter() { Operation = "Transcription" };
+
+        //    //    var transcripts = await _contentService.GetFilteredTranscriptsAsync(jrf);
+
+        //    //    allLines.AddRange(lines);
+        //    //}
+
+        //    plan.TranscriptLines = allLines.Distinct().ToList();
+
+        //    // Fetch relevant alerts if any
+        //    plan.Alerts = await _contentService.GetAlertsByDateAsync(date);
+
+        //    return plan;
+        //}
 
         private string ComputeQueryHash(string input)
         {
@@ -83,7 +159,7 @@ namespace ActusAgentService.Services
 
             // Collect transcripts for each topic
             var transcriptTasks = topics.Select(topic =>
-                _repo.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date)
+                _contentService.GetTranscriptsByTopicAndDateAsync(context.OriginalQuery, topic, date)
             );
 
             var allTranscripts = await Task.WhenAll(transcriptTasks);
@@ -94,7 +170,7 @@ namespace ActusAgentService.Services
             if (plan.Intents.Contains("alert") || plan.Intents.Any(i => i.Contains("alert", StringComparison.OrdinalIgnoreCase)))
             {
                 // Let's assume your repo can provide alert text as well
-                var alerts = await _repo.GetAlertsByDateAsync(date);
+                var alerts = await _contentService.GetAlertsByDateAsync(date);
                
                 plan.Alerts.AddRange(alerts);
             }

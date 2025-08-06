@@ -3,6 +3,7 @@ using ActusAgentService.Models.ActIntelligence;
 using ActusAgentService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using static MongoDB.Driver.WriteConcern;
 
 namespace ActusAgentService.Controllers
 {
@@ -41,23 +42,37 @@ namespace ActusAgentService.Controllers
         {
             //extract → normalize → compose → execute
 
-            QueryIntentContext context = await _entityExtractor.ExtractAsync(userQuery);
+            try
+            {
+                QueryIntentContext context = await _entityExtractor.ExtractAsync(userQuery);
 
-            Console.WriteLine($"Extracted: {JsonSerializer.Serialize(context)}");
+                Console.WriteLine($"Extracted: {JsonSerializer.Serialize(context)}");
 
-            var plan = await _planGenerator.GeneratePlanAsync(context);
+                var plan = await _planGenerator.GeneratePlanAsync(context);
 
-            string prompt = _promptComposer.Compose(context, plan);
+                var (systemMessage, data) = _promptComposer.Compose(context, plan);
 
-            Console.WriteLine("Prompt:\n" + prompt);
+                Console.WriteLine("SystemMessage:\n" + systemMessage);
 
-            var response = await _openAiService.GetChatCompletionAsync(prompt);
+                //Console.WriteLine("UserMessage:\n" + data);
 
-            Console.WriteLine("Response:\n" + response);
+                var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+                //or
+                //var response = await _openAiService.GetChatCompletionAsync(userQuery, data);
 
-            var result = await _agentDispatcher.ExecuteAsync(context, plan, response);
+                Console.WriteLine("Response:\n" + response);
 
-            return Ok(result);
+                var result = await _agentDispatcher.ExecuteAsync(context, plan, response);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
         }
 
         [HttpPost("agent-transcripts")]
@@ -69,7 +84,7 @@ namespace ActusAgentService.Controllers
 }
 //OPTION A WITH EMEDDING
 /*
-var transcripts = await _repo.LoadAllTranscriptsAsync();
+var transcripts = await _contentService.LoadAllTranscriptsAsync();
 
 var queryVec = await _embed.EmbedTextAsync(userQuery);
 

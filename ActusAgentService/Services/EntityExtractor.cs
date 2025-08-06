@@ -38,7 +38,7 @@ User query: ""{userQuery}""
 ";
 
 
-            var jsonResponse = await _openAiService.GetChatCompletionAsync(systemPrompt);
+            var jsonResponse = await _openAiService.GetChatCompletionAsync("You are a helpful media assistant.",systemPrompt);
 
             try
             {

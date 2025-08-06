@@ -3,7 +3,7 @@
 // Define a base address and client with a timeout.
 // These are not changed in the loop, so they should be set once.
 var client = new HttpClient();
-client.Timeout = TimeSpan.FromMinutes(5);
+client.Timeout = TimeSpan.FromMinutes(10);
 client.BaseAddress = new Uri("http://localhost:5270"); // adjust port
 
 // The program will now run in a loop, continuously asking for input.

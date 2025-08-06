@@ -13,6 +13,7 @@ namespace ActusAgentService.Models
         public List<DateEntity> Dates { get; set; }
 
         public List<SourceEntity> Sources { get; set; }
+        //public List<int> ChannelIds { get; set; }
     }
     public class Entity
     {
