@@ -1,6 +1,8 @@
 ﻿using ActusAgentService.Models;
 using System.Text;
 using System.Text.Json;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ActusAgentService.Services
 {
@@ -40,23 +42,40 @@ namespace ActusAgentService.Services
 
             //User query: ""{userQuery}""
             //";
-            var systemPrompt = $@"
+            var systemPrompt = @$"
 You are a smart assistant. Analyze the following user query and extract:
 
-- intents (list of strings)
-- entities (list of objects with 'entity' and 'type')
-- dates (list of objects with 'date', 'type', and optional 'startTime' and 'endTime' in 24-hour format)
-- sources (list of objects with 'source' and 'type')
+- intents: list of strings.
+- entities: list of objects with 'entity' and 'type'.
+- dates: list of objects with this exact schema:
+  - If the date is a single point in time:
+    {{
+      ""date"": ""yyyy-MM-dd"",
+      ""type"": ""single"",
+      ""startTime"": ""HH:mm:ss"" (optional),
+      ""endTime"": ""HH:mm:ss"" (optional)
+    }}
+  - If the date is a range:
+    {{
+      ""type"": ""date_range"",
+      ""startDate"": ""yyyy-MM-dd"",
+      ""endDate"": ""yyyy-MM-dd"",
+      ""startTime"": ""HH:mm:ss"" (optional),
+      ""endTime"": ""HH:mm:ss"" (optional)
+    }}
 
-Return dates in **yyyy-MM-dd** format, and times in **HH:mm:ss** (24-hour clock).
-If the user did not specify a year, assume the current year is {DateTime.UtcNow.Year}.
-For date ranges, include 'startDate' and 'endDate'.
-For time ranges, include 'startTime' and 'endTime'.
+- sources: list of objects with 'source' and 'type'.
 
-Respond only in **valid JSON**. Do not include any explanation or comments.
+Rules:
+- Use current year ({DateTime.UtcNow.Year}) if the year is not provided.
+- Always follow the above structure exactly.
+- Always include startDate and endDate if type is ""date_range"".
+
+Return only valid JSON. No comments, no extra text.
 
 User query: ""{userQuery}""
 ";
+
 
             var jsonResponse = await _openAiService.GetChatCompletionAsync("You are a helpful media assistant.",systemPrompt);
 
@@ -71,6 +90,8 @@ User query: ""{userQuery}""
                     throw new Exception("Deserialized context is null. Raw response: " + jsonResponse);
 
                 context.OriginalQuery = userQuery;
+
+                context.RawJsonResponse = jsonResponse;
 
 
                 //var dateStrings = context.Dates.Select(d => d.Date).ToList();

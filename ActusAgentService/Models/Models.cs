@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using ActusAgentService.Models.ActIntelligence;
+using System.Text.Json.Serialization;
 
 namespace ActusAgentService.Models
 {
     public class QueryIntentContext
     {
         public string OriginalQuery { get; set; }
+        public string RawJsonResponse { get; set; }
 
         public List<string> Intents { get; set; }
 
@@ -26,8 +28,14 @@ namespace ActusAgentService.Models
 
     public class DateEntity
     {
-        [JsonPropertyName("date")]
-        public string Date { get; set; }
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+
+        [JsonPropertyName("startDate")]
+        public string StartDate { get; set; }
+
+        [JsonPropertyName("endDate")]
+        public string EndDate { get; set; }
 
         [JsonPropertyName("startTime")]
         public string StartTime { get; set; }
@@ -35,9 +43,11 @@ namespace ActusAgentService.Models
         [JsonPropertyName("endTime")]
         public string EndTime { get; set; }
 
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        // Optional: Still include this if "date" is used for single date types
+        [JsonPropertyName("date")]
+        public string Date { get; set; }
     }
+
 
     public class SourceEntity
     {
@@ -84,8 +94,8 @@ namespace ActusAgentService.Models
         public string FinalPrompt { get; set; }
         public string AdditionalInstructions { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public bool IsExpired => (DateTime.UtcNow - CreatedAt).TotalMinutes > 10; // optional TTL
+        public JobResultFilter Filter { get; set; }
     }
 
     public class AgentResponse

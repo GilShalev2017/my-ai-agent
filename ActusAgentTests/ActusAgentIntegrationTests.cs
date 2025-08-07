@@ -16,6 +16,7 @@ public class ActusAgentIntegrationTests
 
     private readonly IEmbeddingProvider _embeddingProvider;
     private readonly IAiJobResultRepositoryExtended _aiJobResultRepositoryExtended;
+    private readonly PromptComposer _promptComposer;
 
     public ActusAgentIntegrationTests()
     {
@@ -25,9 +26,9 @@ public class ActusAgentIntegrationTests
         _entityExtractor = new EntityExtractor(_openAiService, _dateNormalizer);
         _embeddingProvider = new EmbeddingProvider();
         _aiJobResultRepositoryExtended = new AiJobResultRepositoryExtended(null);
-
         _contentService = new ContentService(_embeddingProvider, _aiJobResultRepositoryExtended);
         _planGenerator = new PlanGenerator(_contentService);
+        _promptComposer = new PromptComposer();
     }
 
     [TestMethod]
@@ -77,7 +78,7 @@ public class ActusAgentIntegrationTests
         Console.WriteLine($"First Run:\n{JsonSerializer.Serialize(repeat1, new JsonSerializerOptions { WriteIndented = true })}");
         Console.WriteLine($"Second Run:\n{JsonSerializer.Serialize(repeat2, new JsonSerializerOptions { WriteIndented = true })}");
 
-        
+
         //Assert.AreEqual(
         //    JsonSerializer.Serialize(repeat1),
         //    JsonSerializer.Serialize(repeat2),
@@ -142,7 +143,7 @@ public class ActusAgentIntegrationTests
         // Optional: check for consistency in repeated queries
         var query1 = "Was gil mentioned on the fifth of August?";
         var context1 = await _entityExtractor.ExtractAsync(query1);
-        
+
         var query2 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
         var context2 = await _entityExtractor.ExtractAsync(query2);
     }
@@ -159,6 +160,7 @@ public class ActusAgentIntegrationTests
             Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
         }
         Console.WriteLine("Query 1 TranscriptLines Count: " + plan1.TranscriptLines.Count);
+        Console.WriteLine($"Query 1 Filter: Operation={plan1.Filter?.Operation}, Start={plan1.Filter?.Start}, End={plan1.Filter?.End}");
 
         var query2 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
         var context2 = await _entityExtractor.ExtractAsync(query2);
@@ -169,6 +171,7 @@ public class ActusAgentIntegrationTests
             Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
         }
         Console.WriteLine("Query 2 TranscriptLines Count: " + plan2.TranscriptLines.Count);
+        Console.WriteLine($"Query 2 Filter: Operation={plan2.Filter?.Operation}, Start={plan2.Filter?.Start}, End={plan2.Filter?.End}");
 
         var query3 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
         var context3 = await _entityExtractor.ExtractAsync(query3);
@@ -179,5 +182,103 @@ public class ActusAgentIntegrationTests
             Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
         }
         Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
+        Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
+    }
+
+    [TestMethod]
+    public async Task EntityExtractor_TestExtractedDatesQueryPlansAndPrompts()
+    {
+        var query1 = "Was gil mentioned on the fifth of August?";
+        var context1 = await _entityExtractor.ExtractAsync(query1);
+        QueryPlan plan1 = await _planGenerator.GeneratePlanAsync(context1);
+        //Console.WriteLine("\nQuery 1 Dates: " + string.Join(", ", plan1.Dates));
+        //foreach (var date in plan1.RawDates ?? new())
+        //{
+        //    Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
+        //}
+        Console.WriteLine("Query 1 TranscriptLines Count: " + plan1.TranscriptLines.Count);
+        Console.WriteLine($"Query 1 Filter: Operation={plan1.Filter?.Operation}, Start={plan1.Filter?.Start}, End={plan1.Filter?.End}");
+        (string systemMessage, string data) = _promptComposer.Compose(context1, plan1);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+
+        var query2 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
+        var context2 = await _entityExtractor.ExtractAsync(query2);
+        QueryPlan plan2 = await _planGenerator.GeneratePlanAsync(context2);
+        //Console.WriteLine("\nQuery 2 Dates: " + string.Join(", ", plan2.Dates));
+        //foreach (var date in plan2.RawDates ?? new())
+        //{
+        //    Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
+        //}
+        Console.WriteLine("Query 2 TranscriptLines Count: " + plan2.TranscriptLines.Count);
+        Console.WriteLine($"Query 2 Filter: Operation={plan2.Filter?.Operation}, Start={plan2.Filter?.Start}, End={plan2.Filter?.End}");
+        (systemMessage, data) = _promptComposer.Compose(context2, plan2);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+
+        var query3 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
+        var context3 = await _entityExtractor.ExtractAsync(query3);
+        Console.WriteLine("\nRaw Json Response: " + context3.RawJsonResponse);
+        QueryPlan plan3 = await _planGenerator.GeneratePlanAsync(context3);
+        //Console.WriteLine("\nQuery 3 Dates: " + string.Join(", ", plan3.Dates));
+        //foreach (var date in plan3.RawDates ?? new())
+        //{
+        //    Console.WriteLine($"  Date: {date.Date}, StartTime: {date.StartTime}, EndTime: {date.EndTime}, Type: {date.Type}");
+        //}
+        Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
+        Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
+        (systemMessage, data) = _promptComposer.Compose(context3, plan3);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+    }
+
+    [TestMethod]
+    public async Task EntityExtractor_TestRawJsonResponseOfContext()
+    {
+        //var query1 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
+        //var context1 = await _entityExtractor.ExtractAsync(query1);
+        //Console.WriteLine("\nRaw Json Response: " + context1.RawJsonResponse);
+
+        //var query2 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
+        //var context2 = await _entityExtractor.ExtractAsync(query2);
+        //Console.WriteLine("\nRaw Json Response: " + context2.RawJsonResponse);
+
+        //var query3 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
+        //var context3 = await _entityExtractor.ExtractAsync(query3);
+        //Console.WriteLine("\nRaw Json Response: " + context3.RawJsonResponse);
+
+
+        //var query1 = "Was gil mentioned on the fifth of August?";
+        //var context1 = await _entityExtractor.ExtractAsync(query1);
+        //Console.WriteLine("\nRaw Json Response: " + context1.RawJsonResponse);
+
+        //var query2 = "Was gil mentioned on the fifth of August?";
+        //var context2 = await _entityExtractor.ExtractAsync(query2);
+        //Console.WriteLine("\nRaw Json Response: " + context2.RawJsonResponse);
+
+        //var query3 = "Was gil mentioned on the fifth of August?";
+        //var context3 = await _entityExtractor.ExtractAsync(query3);
+        //Console.WriteLine("\nRaw Json Response: " + context3.RawJsonResponse);
+
+        var query1 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
+        var context1 = await _entityExtractor.ExtractAsync(query1);
+        Console.WriteLine("\nRaw Json Response: " + context1.RawJsonResponse);
+
+        var query2 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
+        var context2 = await _entityExtractor.ExtractAsync(query2);
+        Console.WriteLine("\nRaw Json Response: " + context2.RawJsonResponse);
+
+        var query3 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
+        var context3 = await _entityExtractor.ExtractAsync(query3);
+        Console.WriteLine("\nRaw Json Response: " + context3.RawJsonResponse);
     }
 }

@@ -5,7 +5,7 @@ namespace ActusAgentService.Services
 {
     public interface IPromptComposer
     {
-        (string systemMessage, string userMessage) Compose(QueryIntentContext context, QueryPlan plan);
+        (string systemMessage, string data) Compose(QueryIntentContext context, QueryPlan plan);
     }
     /// <summary>
     /// Turn context + plan into a smart LLM prompt
@@ -38,7 +38,7 @@ namespace ActusAgentService.Services
             return "Provide an analysis based on the above context and transcripts.";
         }
 
-        public (string systemMessage, string userMessage) Compose(QueryIntentContext context, QueryPlan plan)
+        public (string systemMessage, string data) Compose(QueryIntentContext context, QueryPlan plan)
         {
             var sbSystem = new StringBuilder();
             var sbUser = new StringBuilder();

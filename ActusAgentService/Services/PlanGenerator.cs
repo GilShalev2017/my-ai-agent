@@ -24,18 +24,6 @@ namespace ActusAgentService.Services
 
         public async Task<QueryPlan> GeneratePlanAsync(QueryIntentContext context)
         {
-            var plan = new QueryPlan
-            {
-                QueryHash = ComputeQueryHash(context.OriginalQuery),
-                UserQuery = context.OriginalQuery,
-                Intents = context.Intents ?? new(),
-                Entities = context.Entities?.Select(e => e.EntityName).ToList() ?? new(),
-                Dates = context.Dates?.Select(d => d.Date).ToList() ?? new(),
-                RawDates = context.Dates ?? new List<DateEntity>(),
-                Sources = context.Sources?.Select(s => s.Source).ToList() ?? new(),
-                CreatedAt = DateTime.UtcNow
-            };
-
             var filter = new JobResultFilter
             {
                 Operation = "Transcription"
@@ -48,26 +36,60 @@ namespace ActusAgentService.Services
 
                 foreach (var dateEntity in context.Dates)
                 {
-                    if (!DateTime.TryParse(dateEntity.Date, out var baseDate))
+                    DateTime? startDateTime = null;
+                    DateTime? endDateTime = null;
+
+                    // Handle range first (StartDate + EndDate)
+                    if (!string.IsNullOrWhiteSpace(dateEntity.StartDate) &&
+                        DateTime.TryParse(dateEntity.StartDate, out var startDateBase))
+                    {
+                        startDateTime = startDateBase.Date;
+                        if (!string.IsNullOrWhiteSpace(dateEntity.StartTime) &&
+                            TimeSpan.TryParse(dateEntity.StartTime, out var startTime))
+                        {
+                            startDateTime = startDateTime.Value.Add(startTime);
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(dateEntity.EndDate) &&
+                        DateTime.TryParse(dateEntity.EndDate, out var endDateBase))
+                    {
+                        endDateTime = endDateBase.Date;
+                        if (!string.IsNullOrWhiteSpace(dateEntity.EndTime) &&
+                            TimeSpan.TryParse(dateEntity.EndTime, out var endTime))
+                        {
+                            endDateTime = endDateTime.Value.Add(endTime);
+                        }
+                        else
+                        {
+                            // If no time given, assume end of day
+                            endDateTime = endDateTime.Value.AddDays(1).AddTicks(-1);
+                        }
+                    }
+
+                    // Fallback to single Date (for backward compatibility)
+                    if (startDateTime == null && !string.IsNullOrWhiteSpace(dateEntity.Date) &&
+                        DateTime.TryParse(dateEntity.Date, out var baseDate))
+                    {
+                        startDateTime = baseDate.Date;
+                        endDateTime = baseDate.Date.AddDays(1).AddTicks(-1); // default to whole day
+
+                        if (!string.IsNullOrWhiteSpace(dateEntity.StartTime) &&
+                            TimeSpan.TryParse(dateEntity.StartTime, out var startTime))
+                        {
+                            startDateTime = baseDate.Date + startTime;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(dateEntity.EndTime) &&
+                            TimeSpan.TryParse(dateEntity.EndTime, out var endTime))
+                        {
+                            endDateTime = baseDate.Date + endTime;
+                        }
+                    }
+
+                    // Skip if we still don't have valid range
+                    if (startDateTime == null || endDateTime == null)
                         continue;
-
-                    // Default times: whole day
-                    DateTime startDateTime = baseDate.Date;
-                    DateTime endDateTime = baseDate.Date.AddDays(1).AddTicks(-1);
-
-                    // Override with startTime if available
-                    if (!string.IsNullOrWhiteSpace(dateEntity.StartTime) &&
-                        TimeSpan.TryParse(dateEntity.StartTime, out var startTime))
-                    {
-                        startDateTime = baseDate.Date + startTime;
-                    }
-
-                    // Override with endTime if available
-                    if (!string.IsNullOrWhiteSpace(dateEntity.EndTime) &&
-                        TimeSpan.TryParse(dateEntity.EndTime, out var endTime))
-                    {
-                        endDateTime = baseDate.Date + endTime;
-                    }
 
                     if (minStart == null || startDateTime < minStart)
                         minStart = startDateTime;
@@ -101,7 +123,19 @@ namespace ActusAgentService.Services
                 }
             }
 
-            plan.TranscriptLines = allLines.Distinct().ToList();
+            var plan = new QueryPlan
+            {
+                QueryHash = ComputeQueryHash(context.OriginalQuery),
+                UserQuery = context.OriginalQuery,
+                Intents = context.Intents ?? new(),
+                Entities = context.Entities?.Select(e => e.EntityName).ToList() ?? new(),
+                Dates = context.Dates?.Select(d => d.Date ?? d.StartDate).ToList() ?? new(),
+                RawDates = context.Dates ?? new List<DateEntity>(),
+                Sources = context.Sources?.Select(s => s.Source).ToList() ?? new(),
+                TranscriptLines = allLines.Distinct().ToList(),
+                Filter = filter,
+                CreatedAt = DateTime.UtcNow
+            };
 
             return plan;
         }
