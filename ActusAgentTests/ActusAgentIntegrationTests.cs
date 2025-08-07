@@ -1,6 +1,7 @@
 ﻿using ActusAgentService.DB;
 using ActusAgentService.Models;
 using ActusAgentService.Services;
+using Azure;
 using Moq;
 using System.Text.Json;
 
@@ -280,5 +281,99 @@ public class ActusAgentIntegrationTests
         var query3 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
         var context3 = await _entityExtractor.ExtractAsync(query3);
         Console.WriteLine("\nRaw Json Response: " + context3.RawJsonResponse);
+    }
+
+    [TestMethod]
+    public async Task EntityExtractor_ExecuteChatCompletion()
+    {
+        var query1 = "Was gil mentioned on the fifth of August?";
+        var context1 = await _entityExtractor.ExtractAsync(query1);
+        QueryPlan plan1 = await _planGenerator.GeneratePlanAsync(context1);
+        Console.WriteLine("Query 1 TranscriptLines Count: " + plan1.TranscriptLines.Count);
+        Console.WriteLine($"Query 1 Filter: Operation={plan1.Filter?.Operation}, Start={plan1.Filter?.Start}, End={plan1.Filter?.End}");
+        (string systemMessage, string data) = _promptComposer.Compose(context1, plan1);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+        var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        Console.WriteLine("Response:\n" + response);
+
+        var query2 = "Was gil mentioned on the fifth of August between 20:00 and 22:00 in the attached transcripts?";
+        var context2 = await _entityExtractor.ExtractAsync(query2);
+        QueryPlan plan2 = await _planGenerator.GeneratePlanAsync(context2);
+        Console.WriteLine("Query 2 TranscriptLines Count: " + plan2.TranscriptLines.Count);
+        Console.WriteLine($"Query 2 Filter: Operation={plan2.Filter?.Operation}, Start={plan2.Filter?.Start}, End={plan2.Filter?.End}");
+        (systemMessage, data) = _promptComposer.Compose(context2, plan2);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+        response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        Console.WriteLine("Response:\n" + response);
+
+        var query3 = "Was gil mentioned between the fifth of August 20:00 to the sixth of August same hour, in the attached transcripts?";
+        var context3 = await _entityExtractor.ExtractAsync(query3);
+        QueryPlan plan3 = await _planGenerator.GeneratePlanAsync(context3);
+        Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
+        Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
+        (systemMessage, data) = _promptComposer.Compose(context3, plan3);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+        response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        Console.WriteLine("Response:\n" + response);
+    }
+
+    [TestMethod]
+    public async Task ExecuteChatGPT_ExpectResults()
+    {
+        //var query3 = "Were Netanyahu, Macron, or Trump mentioned on August 5th between 20:00 and 22:00 in the attached transcripts?";
+        //var context3 = await _entityExtractor.ExtractAsync(query3);
+        //QueryPlan plan3 = await _planGenerator.GeneratePlanAsync(context3);
+        //Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
+        //Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
+        //(var systemMessage, var data) = _promptComposer.Compose(context3, plan3);
+        //Console.WriteLine("SystemMessage:\n" + systemMessage);
+        //if (string.IsNullOrWhiteSpace(data))
+        //{
+        //    Console.WriteLine("No data available for this query.");
+        //}
+        //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        //Console.WriteLine("Response:\n" + response);
+
+
+        //var query1 = "Were Gaza, Trump, Putin, Netanyahu or Macron mentioned in the attached transcripts, on August 6th between 18:00 and 18:30 ?";
+        //var context1 = await _entityExtractor.ExtractAsync(query1);
+        //QueryPlan plan1 = await _planGenerator.GeneratePlanAsync(context1);
+        //Console.WriteLine("Query 1 TranscriptLines Count: " + plan1.TranscriptLines.Count);
+        //Console.WriteLine($"Query 1 Filter: Operation={plan1.Filter?.Operation}, Start={plan1.Filter?.Start}, End={plan1.Filter?.End}");
+        //(var systemMessage, var data) = _promptComposer.Compose(context1, plan1);
+        //Console.WriteLine("SystemMessage:\n" + systemMessage);
+        //if (string.IsNullOrWhiteSpace(data))
+        //{
+        //    Console.WriteLine("No data available for this query.");
+        //}
+        //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        //Console.WriteLine("Response:\n" + response);
+
+
+        var query2 = "Can you summarize the main keypoints delivered in the attached transcripts between 19:00 and 19:30 on August 6th ?";
+        var context2 = await _entityExtractor.ExtractAsync(query2);
+        QueryPlan plan2 = await _planGenerator.GeneratePlanAsync(context2);
+        Console.WriteLine("Query 2 TranscriptLines Count: " + plan2.TranscriptLines.Count);
+        Console.WriteLine($"Query 2 Filter: Operation={plan2.Filter?.Operation}, Start={plan2.Filter?.Start}, End={plan2.Filter?.End}");
+        (var systemMessage, var data) = _promptComposer.Compose(context2, plan2);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+        var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        Console.WriteLine("Response:\n" + response);
     }
 }

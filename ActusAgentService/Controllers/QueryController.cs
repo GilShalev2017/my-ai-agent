@@ -40,7 +40,7 @@ namespace ActusAgentService.Controllers
         [HttpPost("ask")]
         public async Task<IActionResult> Ask([FromBody] string userQuery)
         {
-            //extract → normalize → compose → execute
+            //extract →  prepare data (plan) →  compose → execute
 
             try
             {

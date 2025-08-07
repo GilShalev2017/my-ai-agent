@@ -12,6 +12,7 @@ namespace ActusAgentService.Services
         public Task<string> ExecuteAsync(QueryIntentContext context, QueryPlan plan, string llmResponse)
         {
             var intent = plan.Intents.FirstOrDefault()?.ToLower() ?? "unknown";
+        
             return Task.FromResult(intent switch
             {
                 "summarization" => $"[SUMMARY] {llmResponse}",
