@@ -16,7 +16,9 @@ namespace ActusAgentService.Models
 
         public List<SourceEntity> Sources { get; set; }
         //public List<int> ChannelIds { get; set; }
+        public bool IsTimeCodeNeeded { get; set; }
     }
+
     public class Entity
     {
         [JsonPropertyName("entity")]

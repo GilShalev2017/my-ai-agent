@@ -48,6 +48,8 @@ namespace ActusAgentService.Controllers
 
                 Console.WriteLine($"Extracted: {JsonSerializer.Serialize(context)}");
 
+                //context.IsTimeCodeNeeded = true;
+
                 QueryPlan plan = await _planGenerator.GeneratePlanAsync(context);
 
                 var (systemMessage, data) = _promptComposer.Compose(context, plan);
@@ -78,9 +80,9 @@ namespace ActusAgentService.Controllers
 
                 Console.WriteLine("Response:\n" + response);
 
-                var result = await _agentDispatcher.ExecuteAsync(context, plan, response);
+                //var result = await _agentDispatcher.ExecuteAsync(context, plan, response);
 
-                return Ok(result);
+                return Ok(response);// result);
             }
             catch (Exception ex)
             {

@@ -117,7 +117,15 @@ namespace ActusAgentService.Services
                     {
                         if (!string.IsNullOrWhiteSpace(line.Text))
                         {
-                            allLines.Add(line.Text.Trim());
+                            if (context.IsTimeCodeNeeded)
+                            {
+                                var timeCodedTranscript = $"{line.StartTime} - {line.EndTime}\n{line.Text.Trim()}";
+                                allLines.Add(timeCodedTranscript);
+                            }
+                            else
+                            { 
+                                allLines.Add(line.Text.Trim());
+                            }
                         }
                     }
                 }

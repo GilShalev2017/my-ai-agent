@@ -12,7 +12,6 @@ namespace ActusAgentService.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey = "";
-       // public const string TooManyTokensMarker = "__TOO_MANY_TOKENS__";
 
         public OpenAiService()
         {
