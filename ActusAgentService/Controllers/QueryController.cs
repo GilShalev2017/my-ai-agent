@@ -48,17 +48,33 @@ namespace ActusAgentService.Controllers
 
                 Console.WriteLine($"Extracted: {JsonSerializer.Serialize(context)}");
 
-                var plan = await _planGenerator.GeneratePlanAsync(context);
+                QueryPlan plan = await _planGenerator.GeneratePlanAsync(context);
 
                 var (systemMessage, data) = _promptComposer.Compose(context, plan);
 
                 Console.WriteLine("SystemMessage:\n" + systemMessage);
 
-                //Console.WriteLine("UserMessage:\n" + data);
+                // Handle empty data gracefully
+                if (string.IsNullOrWhiteSpace(data))
+                {
+                    return Ok(new
+                    {
+                        message = "I couldn’t find any relevant data to answer your question. Please try rephrasing or ask about a different topic."
+                    });
+                }
 
                 var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
                 //or
                 //var response = await _openAiService.GetChatCompletionAsync(userQuery, data);
+
+                if (response.StartsWith("__TOO_MANY_TOKENS__"))
+                {
+                    int totalTokens = int.Parse(response.Split(':')[1]);
+                    return Ok(new
+                    {
+                        message = $"The query is too large to process ({totalTokens} tokens). Please reduce the time range, number of channels, or amount of input data and try again."
+                    });
+                }
 
                 Console.WriteLine("Response:\n" + response);
 

@@ -29,6 +29,12 @@ namespace ActusAgentService.Models
         [JsonPropertyName("date")]
         public string Date { get; set; }
 
+        [JsonPropertyName("startTime")]
+        public string StartTime { get; set; }
+
+        [JsonPropertyName("endTime")]
+        public string EndTime { get; set; }
+
         [JsonPropertyName("type")]
         public string Type { get; set; }
     }
@@ -51,24 +57,35 @@ namespace ActusAgentService.Models
         public string Date { get; set; }
         public float[] Embedding { get; set; }
     }
-  
-    //public class QueryIntentContext
+
+    //public class QueryPlan
     //{
-    //    public string OriginalQuery { get; set; } = string.Empty;
-    //    public List<string> Intents { get; set; } = new();
-    //    public List<string> Entities { get; set; } = new();
-    //    public List<string> Dates { get; set; } = new();  // Could be normalized later
-    //    public List<string> Sources { get; set; } = new(); // e.g., "alerts", "transcripts"
+    //    public string UserQuery { get; set; } = string.Empty;
+    //    public string AdditionalInstructions { get; set; } = string.Empty;
+    //    public string PlanId => $"{string.Join("_", Intents ?? new())}_{string.Join("_", Entities ?? new())}";
+    //    public List<string> Intents { get; set; } = [];
+    //    public List<string> Sources { get; set; } = [];
+    //    public List<string> Entities { get; set; } = [];
     //}
 
     public class QueryPlan
     {
-        public string UserQuery { get; set; } = string.Empty;
+        public string QueryHash { get; set; } // hash of user query to cache
+        public string UserQuery { get; set; }
+        public List<string> Intents { get; set; }
+        public List<string> Entities { get; set; }
+        public List<string> Dates { get; set; }
+        public List<DateEntity> RawDates { get; set; }
+        public List<string> Sources { get; set; }
+
+        public List<string> Alerts { get; set; }
+        public List<string> TranscriptLines { get; set; }
+
+        public string FinalPrompt { get; set; }
         public string AdditionalInstructions { get; set; } = string.Empty;
-        public string PlanId => $"{string.Join("_", Intents ?? new())}_{string.Join("_", Entities ?? new())}";
-        public List<string> Intents { get; set; } = [];
-        public List<string> Sources { get; set; } = [];
-        public List<string> Entities { get; set; } = [];
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool IsExpired => (DateTime.UtcNow - CreatedAt).TotalMinutes > 10; // optional TTL
     }
 
     public class AgentResponse

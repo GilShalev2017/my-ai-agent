@@ -1,28 +1,9 @@
-﻿using System.Security.Cryptography;
+﻿using ActusAgentService.Models;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ActusAgentService.Services
 {
-    public class QueryPlan
-    {
-        public string QueryHash { get; set; } // hash of user query to cache
-        public string UserQuery { get; set; }
-
-        public List<string> Intents { get; set; }
-        public List<string> Entities { get; set; }
-        public List<string> Dates { get; set; }
-        public List<string> Sources { get; set; }
-
-        public List<string> Alerts { get; set; }
-        public List<string> TranscriptLines { get; set; }
-
-        public string FinalPrompt { get; set; }
-        public string AdditionalInstructions { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public bool IsExpired => (DateTime.UtcNow - CreatedAt).TotalMinutes > 10; // optional TTL
-    }
-
     public class QueryPlanCache
     {
         private static readonly Dictionary<string, QueryPlan> _cache = new();

@@ -20,7 +20,7 @@ namespace ActusAgentService.Services
         private readonly IEmbeddingProvider _embeddingProvider;
         private readonly IAiJobResultRepositoryExtended _aiJobResultRepositoryExtended;
 
-        public ContentService(IEmbeddingProvider embeddingProvider, IMongoDatabase db, IAiJobResultRepositoryExtended aiJobResultRepositoryExtended)
+        public ContentService(IEmbeddingProvider embeddingProvider, IAiJobResultRepositoryExtended aiJobResultRepositoryExtended)
         {
             _embeddingProvider = embeddingProvider;
             _aiJobResultRepositoryExtended = aiJobResultRepositoryExtended;

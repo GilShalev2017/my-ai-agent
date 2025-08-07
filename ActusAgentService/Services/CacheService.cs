@@ -1,4 +1,6 @@
-﻿namespace ActusAgentService.Services
+﻿using ActusAgentService.Models;
+
+namespace ActusAgentService.Services
 {
     public class CacheService
     {

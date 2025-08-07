@@ -12,6 +12,7 @@ namespace ActusAgentService.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey = "";
+       // public const string TooManyTokensMarker = "__TOO_MANY_TOKENS__";
 
         public OpenAiService()
         {
@@ -33,8 +34,9 @@ namespace ActusAgentService.Services
 
             if (totalTokens > 128000)
             {
-                throw new Exception($"Your query contains too much data ({totalTokens} tokens). " +
-                    $"Please reduce the time range, number of channels, or amount of input data.");
+                //throw new Exception($"Your query contains too much data ({totalTokens} tokens). " +
+                //    $"Please reduce the time range, number of channels, or amount of input data.");
+                return $"__TOO_MANY_TOKENS__:{totalTokens}";
             }
 
             var body = new
