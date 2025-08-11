@@ -17,6 +17,7 @@ namespace ActusAgentService.Models
         public List<SourceEntity> Sources { get; set; }
         //public List<int> ChannelIds { get; set; }
         public bool IsTimeCodeNeeded { get; set; }
+        //public bool SemanticQuery { get; set; } =true;
     }
 
     public class Entity

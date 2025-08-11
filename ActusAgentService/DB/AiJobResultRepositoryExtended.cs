@@ -3,6 +3,7 @@ using ActusAgentService.Models.ActIntelligence;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using System.Threading.Tasks;
 
 namespace ActusAgentService.DB
 {
@@ -37,6 +38,7 @@ namespace ActusAgentService.DB
         public Task<List<FaceDetectionResult>> GetFilteredObjects(FaceDetectionFilter faceDetectionFilter);
         public Task<DateTime> GetMostRecentFaceTimestampAsync(int channelId);
         public Task<List<JobResult>> GetFilteredTranscriptsAsync(JobResultFilter filter);
+        public Task<List<JobResult>> GetJobResultsByIdsAsync(IEnumerable<string> mongoIds);
     }
     public class AiJobResultRepositoryExtended : IAiJobResultRepositoryExtended
     {
@@ -302,8 +304,6 @@ namespace ActusAgentService.DB
 
             return faceDetectionResults;
         }
-
-
         public async Task<List<FaceDetectionResult>> GetFilteredObjects(FaceDetectionFilter objectDetectionFilter)
         {
             // Step 1: Build the filter for JobResults
@@ -357,6 +357,18 @@ namespace ActusAgentService.DB
                 .ToList();
 
             return faceDetectionResults;
+        }
+        public async Task<List<JobResult>> GetJobResultsByIdsAsync(IEnumerable<string> mongoIds)
+        {
+            // Validate input
+            if (mongoIds == null || !mongoIds.Any())
+            {
+                return new List<JobResult>(); // Return an empty list if no IDs are provided
+            }
+
+            // Fetch job results from the MongoDB collection
+            var jobResults = await _aiJobResultCollection.Find(job => mongoIds.Contains(job.Id)).ToListAsync();
+            return jobResults;
         }
     }
 }

@@ -142,5 +142,7 @@ namespace ActusAgentService.Models.ActIntelligence
         public string? TranslationLanguage { get; set; }
         public ProviderType? ProviderType { get; set; }
         public string? TranscriptionJobResultId { get; set; }
+
+        public float[]? Embedding { get; set; }
     }
 }

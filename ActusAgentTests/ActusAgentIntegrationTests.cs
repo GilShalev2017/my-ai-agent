@@ -16,6 +16,7 @@ public class ActusAgentIntegrationTests
     private readonly IContentService _contentService;
 
     private readonly IEmbeddingProvider _embeddingProvider;
+    private readonly IVectorDBRepository _vectorDBRepository;
     private readonly IAiJobResultRepositoryExtended _aiJobResultRepositoryExtended;
     private readonly PromptComposer _promptComposer;
 
@@ -27,8 +28,10 @@ public class ActusAgentIntegrationTests
         _entityExtractor = new EntityExtractor(_openAiService, _dateNormalizer);
         _embeddingProvider = new EmbeddingProvider();
         _aiJobResultRepositoryExtended = new AiJobResultRepositoryExtended(null);
-        _contentService = new ContentService(_embeddingProvider, _aiJobResultRepositoryExtended);
-        _planGenerator = new PlanGenerator(_contentService);
+        _vectorDBRepository = new VectorDBRepository(null, null, _embeddingProvider);
+        _contentService = new ContentService(_embeddingProvider, _aiJobResultRepositoryExtended, _vectorDBRepository);
+        _vectorDBRepository = new VectorDBRepository(null,null,_embeddingProvider);
+        _planGenerator = new PlanGenerator(_contentService, _embeddingProvider,_vectorDBRepository);
         _promptComposer = new PromptComposer();
     }
 
@@ -361,28 +364,12 @@ public class ActusAgentIntegrationTests
         //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
         //Console.WriteLine("Response:\n" + response);
 
-        //var query3 = "Were Netanyahu, Macron, or Trump mentioned on August 5th between 20:00 and 22:00 in the attached transcripts?";
-        //var context3 = await _entityExtractor.ExtractAsync(query3);
-        //QueryPlan plan3 = await _planGenerator.GeneratePlanAsync(context3);
-        //Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
-        //Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
-        //(var systemMessage, var data) = _promptComposer.Compose(context3, plan3);
-        //Console.WriteLine("SystemMessage:\n" + systemMessage);
-        //if (string.IsNullOrWhiteSpace(data))
-        //{
-        //    Console.WriteLine("No data available for this query.");
-        //}
-        //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
-        //Console.WriteLine("Response:\n" + response);
-
-
-        var query4 = "Were Netanyahu, Macron, Gaza, or Trump mentioned in the attached transcripts on August 6th between 18:00 and 18:15 ? If so, at what times were they mentioned?";
-        var context4 = await _entityExtractor.ExtractAsync(query4);
-        context4.IsTimeCodeNeeded = true; // Set this to true to include time codes in the response
-        QueryPlan plan4 = await _planGenerator.GeneratePlanAsync(context4);
-        Console.WriteLine("Query 4 TranscriptLines Count: " + plan4.TranscriptLines.Count);
-        Console.WriteLine($"Query 4 Filter: Operation={plan4.Filter?.Operation}, Start={plan4.Filter?.Start}, End={plan4.Filter?.End}");
-        (var systemMessage, var data) = _promptComposer.Compose(context4, plan4);
+        var query3 = "Were Netanyahu, Macron, or Trump mentioned on August 6th between 18:00 and 18:30 in the attached transcripts?";
+        var context3 = await _entityExtractor.ExtractAsync(query3);
+        QueryPlan plan3 = await _planGenerator.GeneratePlanAsync(context3);
+        Console.WriteLine("Query 3 TranscriptLines Count: " + plan3.TranscriptLines.Count);
+        Console.WriteLine($"Query 3 Filter: Operation={plan3.Filter?.Operation}, Start={plan3.Filter?.Start}, End={plan3.Filter?.End}");
+        (var systemMessage, var data) = _promptComposer.Compose(context3, plan3);
         Console.WriteLine("SystemMessage:\n" + systemMessage);
         if (string.IsNullOrWhiteSpace(data))
         {
@@ -390,5 +377,21 @@ public class ActusAgentIntegrationTests
         }
         var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
         Console.WriteLine("Response:\n" + response);
+
+
+        //var query4 = "Were Netanyahu, Macron, Gaza, or Trump mentioned in the attached transcripts on August 6th between 18:00 and 18:15 ? If so, at what times were they mentioned?";
+        //var context4 = await _entityExtractor.ExtractAsync(query4);
+        //context4.IsTimeCodeNeeded = true; // Set this to true to include time codes in the response
+        //QueryPlan plan4 = await _planGenerator.GeneratePlanAsync(context4);
+        //Console.WriteLine("Query 4 TranscriptLines Count: " + plan4.TranscriptLines.Count);
+        //Console.WriteLine($"Query 4 Filter: Operation={plan4.Filter?.Operation}, Start={plan4.Filter?.Start}, End={plan4.Filter?.End}");
+        //(var systemMessage, var data) = _promptComposer.Compose(context4, plan4);
+        //Console.WriteLine("SystemMessage:\n" + systemMessage);
+        //if (string.IsNullOrWhiteSpace(data))
+        //{
+        //    Console.WriteLine("No data available for this query.");
+        //}
+        //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        //Console.WriteLine("Response:\n" + response);
     }
 }

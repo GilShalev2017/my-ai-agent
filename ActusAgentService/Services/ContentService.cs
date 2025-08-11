@@ -10,8 +10,8 @@ namespace ActusAgentService.Services
     public interface IContentService
     {
         Task<List<JobResult>> GetFilteredTranscriptsAsync(JobResultFilter filter);
-        Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date);
-
+        //Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date);
+        Task<List<JobResult>> GetTranscriptsBySemanticSearchAndDateAsync(string userQuery, JobResultFilter filter);
         Task<List<string>>GetAlertsByDateAsync(string date);
     }
 
@@ -19,11 +19,13 @@ namespace ActusAgentService.Services
     {
         private readonly IEmbeddingProvider _embeddingProvider;
         private readonly IAiJobResultRepositoryExtended _aiJobResultRepositoryExtended;
+        private readonly IVectorDBRepository _vectorDbRepository;
 
-        public ContentService(IEmbeddingProvider embeddingProvider, IAiJobResultRepositoryExtended aiJobResultRepositoryExtended)
+        public ContentService(IEmbeddingProvider embeddingProvider, IAiJobResultRepositoryExtended aiJobResultRepositoryExtended, IVectorDBRepository vectorDBRepository)
         {
             _embeddingProvider = embeddingProvider;
             _aiJobResultRepositoryExtended = aiJobResultRepositoryExtended;
+            _vectorDbRepository = vectorDBRepository;
         }
 
         public Task<List<string>> GetAlertsByDateAsync(string date)
@@ -36,36 +38,60 @@ namespace ActusAgentService.Services
             return await _aiJobResultRepositoryExtended.GetFilteredTranscriptsAsync(filter);
         }
 
-        public async Task<List<string>> GetTranscriptsByTopicAndDateAsync(string userQuery, string topic, string date)
+        public async Task<List<JobResult>> GetTranscriptsBySemanticSearchAndDateAsync(string userQuery, JobResultFilter filter)
         {
-            //var queryVector = await _embeddingProvider.EmbedAsync(userQuery); // vector of floats
-
-            //var allDocs = await _collection
-            //    .Find(d => d.Topic == topic && d.Date == date)
-            //    .ToListAsync();
-
-            //return allDocs
-            //    .Select(d => new {
-            //        text = d.Text,
-            //        similarity = CosineSimilarity(queryVector, d.Embedding)
-            //    })
-            //    .OrderByDescending(x => x.similarity)
-            //    .Take(10)
-            //    .Select(x => x.text)
-            //    .ToList();
-            throw new NotImplementedException();
-        }
-
-        private float CosineSimilarity(float[] v1, float[] v2)
-        {
-            float dot = 0, mag1 = 0, mag2 = 0;
-            for (int i = 0; i < v1.Length; i++)
+            // Input validation
+            if (string.IsNullOrWhiteSpace(userQuery))
             {
-                dot += v1[i] * v2[i];
-                mag1 += v1[i] * v1[i];
-                mag2 += v2[i] * v2[i];
+                return new List<JobResult>();
             }
-            return dot / (float)(Math.Sqrt(mag1) * Math.Sqrt(mag2));
+
+            try
+            {
+                // Step 1: Embed the user query to get a vector
+                var queryVector = await _embeddingProvider.EmbedAsync(userQuery);
+
+                // Step 2: Perform semantic search with date filtering in vector DB
+                // The vector DB handles both semantic similarity and date filtering efficiently
+                var mongoIds = await _vectorDbRepository.SearchSimilarAsync(queryVector, filter, topK: 20);
+
+                if (!mongoIds.Any())
+                {
+                    return new List<JobResult>();
+                }
+
+                // Step 3: Fetch the full JobResult objects from the main database using the returned MongoIds
+                var relevantTranscripts = await _aiJobResultRepositoryExtended.GetJobResultsByIdsAsync(mongoIds.ToList());
+
+                // Handle case where some MongoIds might not exist in MongoDB (data consistency)
+                if (!relevantTranscripts.Any())
+                {
+                    return new List<JobResult>();
+                }
+
+                // Step 4: Preserve semantic similarity order but group by chronological order within similar scores
+                // Alternative: return relevantTranscripts.OrderBy(t => t.Start).ToList(); for pure chronological
+
+                // Create a dictionary to preserve the original similarity order
+                var mongoIdOrder = mongoIds
+                    .Select((id, index) => new { Id = id, Order = index })
+                    .ToDictionary(x => x.Id, x => x.Order);
+
+                // Sort by similarity order first, then by start time for items with same similarity
+                return relevantTranscripts
+                    .Where(t => mongoIdOrder.ContainsKey(t.Id)) // Ensure the transcript has a valid similarity score
+                    .OrderBy(t => mongoIdOrder.TryGetValue(t.Id, out var order) ? order : int.MaxValue)
+                    .ThenBy(t => t.Start)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (you might want to inject ILogger)
+                // _logger?.LogError(ex, "Error during semantic search for query: {Query}", userQuery);
+
+                // Fallback to regular filtered search without semantic similarity
+                return await GetFilteredTranscriptsAsync(filter);
+            }
         }
     }
 
