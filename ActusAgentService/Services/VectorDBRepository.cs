@@ -107,15 +107,35 @@ namespace ActusAgentService.Services
 
             var point = new
             {
-                id = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                id = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), // ✅ Use ulong for Qdrant ID
                 vector = vector,
                 payload = payload
             };
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"collections/{_collectionName}/points?wait=true",
-                    new { points = new[] { point } });
+                var requestObject = new { points = new[] { point } };
+
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                };
+
+                var json = System.Text.Json.JsonSerializer.Serialize(requestObject, jsonOptions);
+                _logger.LogInformation("Qdrant request JSON:\n{Json}", json);
+                Console.WriteLine($"Qdrant request JSON:\n{json}");
+
+                // ✅ FIXED: Use PUT instead of POST for upsert operations
+                var response = await _httpClient.PutAsync(
+                    $"collections/{_collectionName}/points?wait=true",
+                    new StringContent(json, System.Text.Encoding.UTF8, "application/json")
+                );
+
+                var respBody = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("Qdrant response: {Status} - {Body}", response.StatusCode, respBody);
+                Console.WriteLine($"Qdrant response: {response.StatusCode} - {respBody}");
+
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Stored embedding for {Count} transcript lines with MongoDB ID: {MongoId}",
