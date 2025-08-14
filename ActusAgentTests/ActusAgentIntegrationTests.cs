@@ -1,9 +1,11 @@
-﻿using ActusAgentService.DB;
+﻿using ActInfra.Security;
+using ActusAgentService.DB;
 using ActusAgentService.Models;
 using ActusAgentService.Services;
 using Azure;
 using Moq;
 using System.Text.Json;
+using static Google.Protobuf.WellKnownTypes.Field.Types;
 
 [TestClass]
 public class ActusAgentIntegrationTests
@@ -25,12 +27,11 @@ public class ActusAgentIntegrationTests
         _mockTranscriptRepo = new Mock<ContentService>(null, null);
         _openAiService = new OpenAiService();
         _dateNormalizer = new DateNormalizer();
-        _entityExtractor = new EntityExtractor(_openAiService, _dateNormalizer);
+        _entityExtractor = new EntityExtractor(_openAiService);//, _dateNormalizer);
         _embeddingProvider = new EmbeddingProvider();
         _aiJobResultRepositoryExtended = new AiJobResultRepositoryExtended(null);
-        _vectorDBRepository = new VectorDBRepository(null, null, _embeddingProvider);
+        _vectorDBRepository = new VectorDBRepository(null, _embeddingProvider);
         _contentService = new ContentService(_embeddingProvider, _aiJobResultRepositoryExtended, _vectorDBRepository);
-        _vectorDBRepository = new VectorDBRepository(null,null,_embeddingProvider);
         _planGenerator = new PlanGenerator(_contentService, _embeddingProvider,_vectorDBRepository);
         _promptComposer = new PromptComposer();
     }
@@ -394,4 +395,51 @@ public class ActusAgentIntegrationTests
         //var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
         //Console.WriteLine("Response:\n" + response);
     }
+
+    [TestMethod]
+    public async Task SemanticSearch()
+    {
+        var query1 = "Bring all mentions of gaza or Palestinians on August 14th";
+        var context1 = await _entityExtractor.ExtractAsync(query1);
+        QueryPlan plan1 = await _planGenerator.GeneratePlanAsync(context1);
+        Console.WriteLine("Query 1 TranscriptLines Count: " + plan1.TranscriptLines.Count);
+        Console.WriteLine($"Query 1 Filter: Operation={plan1.Filter?.Operation}, Start={plan1.Filter?.Start}, End={plan1.Filter?.End}");
+        (var systemMessage, var data) = _promptComposer.Compose(context1, plan1);
+        Console.WriteLine("SystemMessage:\n" + systemMessage);
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Console.WriteLine("No data available for this query.");
+        }
+        var response = await _openAiService.GetChatCompletionAsync(systemMessage, data);
+        Console.WriteLine("Response:\n" + response);
+    }
 }
+
+//Passed:
+//Were Gaza, Trump, Putin, Netanyahu or Macron mentioned in the attached transcripts, on August 6th between 18:00 and 18:30 ?
+//Can you summarize the main keypoints delivered in the attached transcripts between 19:00 and 19:30 on August 6th ?
+
+//Set in context.IsTimeCodeNeeded = true;
+// 18:00 -> 18:15 return too many tokens, but reducing to 18:00-18:12 works fine
+//Were Netanyahu, Macron, Gaza, or Trump mentioned in the attached transcripts on August 6th between 18:00 and 18:15 ? If so, at what times were they mentioned? 
+//What were the most controversial things said on August 6th between 19:00 and 19:30?
+//Was violence discussed on August 6th between 19:00 and 19:30 on any of the channels?
+//Summarize all shows that discussed Trump's peace efforts on August 6th between 19:00 and 19:30
+//Was something emotional or politically sensitive reported on the news on August 6th between 19:00 and 19:30?
+//Which figures or celebs were mentioned on August 6th between 18:00 and 18:30 ?
+//Were there any angry reactions to the Trump intentions on August 6th between 18:00 and 18:30 ?
+//The next didn't mention the Israel Gaza conflict
+//Find transcripts discussing political conflicts on August 6th between 19:00 and 19:30
+//A following direct question did reminds it
+//Wasn't the Israel gaza conflict mentioned too on August 6th between 19:00 and 19:30?
+
+
+//Multi Agents:
+//Find the top 3 suspicious clips from yesterday and email me the alerts. (2 Agents: Actus & Gmail) //Multi Agent
+//Alert me if anything emotional and politically sensitive happened on CNN today //Multi Agent
+
+//Empty results
+//What were the most controversial things said yesterday between 19:00 and 19:30 ? <- since there are no records for yesterday
+
+//Failed
+//Were Netanyahu, Macron, or Trump mentioned on August 6th between 18:00 and 18:30 in the attached transcripts? <-didn't find trump

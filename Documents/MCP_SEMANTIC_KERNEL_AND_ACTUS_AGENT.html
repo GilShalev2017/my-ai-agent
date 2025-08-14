@@ -1,0 +1,949 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Web System Design.md</title><style>@charset "UTF-8";@import 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css';code{color:#c7254e;background-color:#f9f2f4;border-radius:4px}code,kbd{padding:2px 4px}kbd{color:#fff;background-color:#333;border-radius:3px;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}kbd kbd{padding:0;font-size:100%;box-shadow:none}pre{display:block;margin:0 0 10px;word-break:break-all;word-wrap:break-word;color:#333;background-color:#f5f5f5;border:1px solid #ccc;border-radius:4px}pre code{padding:0;font-size:inherit;color:inherit;white-space:pre-wrap;background-color:transparent;border-radius:0}.pre-scrollable{max-height:340px;overflow-y:scroll}table{background-color:transparent}th{text-align:left}.table{width:100%;max-width:100%;margin-bottom:20px}.table>thead>tr>th{padding:8px;line-height:1.4285714;border-top:1px solid #ddd}.table>thead>tr>td,.table>tbody>tr>th,.table>tbody>tr>td,.table>tfoot>tr>th,.table>tfoot>tr>td{padding:8px;line-height:1.4285714;vertical-align:top;border-top:1px solid #ddd}.table>thead>tr>th{vertical-align:bottom;border-bottom:2px solid #ddd}.table>caption+thead>tr:first-child>th,.table>caption+thead>tr:first-child>td,.table>colgroup+thead>tr:first-child>th,.table>colgroup+thead>tr:first-child>td,.table>thead:first-child>tr:first-child>th,.table>thead:first-child>tr:first-child>td{border-top:0}.table>tbody+tbody{border-top:2px solid #ddd}.table .table{background-color:#fff}.table-condensed>thead>tr>th,.table-condensed>thead>tr>td,.table-condensed>tbody>tr>th,.table-condensed>tbody>tr>td,.table-condensed>tfoot>tr>th,.table-condensed>tfoot>tr>td{padding:5px}.table-bordered,.table-bordered>thead>tr>th,.table-bordered>thead>tr>td,.table-bordered>tbody>tr>th,.table-bordered>tbody>tr>td,.table-bordered>tfoot>tr>th,.table-bordered>tfoot>tr>td{border:1px solid #ddd}.table-bordered>thead>tr>th,.table-bordered>thead>tr>td{border-bottom-width:2px}.table-striped>tbody>tr:nth-child(odd)>td,.table-striped>tbody>tr:nth-child(odd)>th{background-color:#f9f9f9}.table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{background-color:#f5f5f5}table col[class*="col-"]{position:static;float:none;display:table-column}table td[class*="col-"],table th[class*="col-"]{position:static;float:none;display:table-cell}.table>thead>tr>td.active,.table>thead>tr>th.active,.table>thead>tr.active>td,.table>thead>tr.active>th,.table>tbody>tr>td.active,.table>tbody>tr>th.active,.table>tbody>tr.active>td,.table>tbody>tr.active>th,.table>tfoot>tr>td.active,.table>tfoot>tr>th.active,.table>tfoot>tr.active>td,.table>tfoot>tr.active>th{background-color:#f5f5f5}.table-hover>tbody>tr>td.active:hover,.table-hover>tbody>tr>th.active:hover,.table-hover>tbody>tr.active:hover>td,.table-hover>tbody>tr:hover>.active,.table-hover>tbody>tr.active:hover>th{background-color:#e8e8e8}.table>thead>tr>td.success,.table>thead>tr>th.success,.table>thead>tr.success>td,.table>thead>tr.success>th,.table>tbody>tr>td.success,.table>tbody>tr>th.success,.table>tbody>tr.success>td,.table>tbody>tr.success>th,.table>tfoot>tr>td.success,.table>tfoot>tr>th.success,.table>tfoot>tr.success>td,.table>tfoot>tr.success>th{background-color:#dff0d8}.table-hover>tbody>tr>td.success:hover,.table-hover>tbody>tr>th.success:hover,.table-hover>tbody>tr.success:hover>td,.table-hover>tbody>tr:hover>.success,.table-hover>tbody>tr.success:hover>th{background-color:#d0e9c6}.table>thead>tr>td.info,.table>thead>tr>th.info,.table>thead>tr.info>td,.table>thead>tr.info>th,.table>tbody>tr>td.info,.table>tbody>tr>th.info,.table>tbody>tr.info>td,.table>tbody>tr.info>th,.table>tfoot>tr>td.info,.table>tfoot>tr>th.info,.table>tfoot>tr.info>td,.table>tfoot>tr.info>th{background-color:#d9edf7}.table-hover>tbody>tr>td.info:hover,.table-hover>tbody>tr>th.info:hover,.table-hover>tbody>tr.info:hover>td,.table-hover>tbody>tr:hover>.info,.table-hover>tbody>tr.info:hover>th{background-color:#c4e3f3}.table>thead>tr>td.warning,.table>thead>tr>th.warning,.table>thead>tr.warning>td,.table>thead>tr.warning>th,.table>tbody>tr>td.warning,.table>tbody>tr>th.warning,.table>tbody>tr.warning>td,.table>tbody>tr.warning>th,.table>tfoot>tr>td.warning,.table>tfoot>tr>th.warning,.table>tfoot>tr.warning>td,.table>tfoot>tr.warning>th{background-color:#fcf8e3}.table-hover>tbody>tr>td.warning:hover,.table-hover>tbody>tr>th.warning:hover,.table-hover>tbody>tr.warning:hover>td,.table-hover>tbody>tr:hover>.warning,.table-hover>tbody>tr.warning:hover>th{background-color:#faf2cc}.table>thead>tr>td.danger,.table>thead>tr>th.danger,.table>thead>tr.danger>td,.table>thead>tr.danger>th,.table>tbody>tr>td.danger,.table>tbody>tr>th.danger,.table>tbody>tr.danger>td,.table>tbody>tr.danger>th,.table>tfoot>tr>td.danger,.table>tfoot>tr>th.danger,.table>tfoot>tr.danger>td,.table>tfoot>tr.danger>th{background-color:#f2dede}.table-hover>tbody>tr>td.danger:hover,.table-hover>tbody>tr>th.danger:hover,.table-hover>tbody>tr.danger:hover>td,.table-hover>tbody>tr:hover>.danger,.table-hover>tbody>tr.danger:hover>th{background-color:#ebcccc}fieldset{border:0;min-width:0}legend{display:block;width:100%;margin-bottom:20px;font-size:21px;line-height:inherit;color:#333;border-bottom:1px solid #e5e5e5}label{display:inline-block;max-width:100%;margin-bottom:5px;font-weight:700}input[type="radio"],input[type="checkbox"]{margin:4px 0 0;margin-top:1px \9;line-height:normal}input[type="file"]{display:block}input[type="range"]{display:block;width:100%}select[multiple],select[size]{height:auto}input[type="file"]:focus,input[type="radio"]:focus,input[type="checkbox"]:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}output{padding-top:7px}output,.form-control{display:block;font-size:14px;line-height:1.4285714;color:#555}.form-control{width:100%;height:34px;padding:6px 12px;background-color:#fff;background-image:none;border:1px solid #ccc;border-radius:4px;box-shadow:inset 0 1px 1px rgba(0,0,0,.075);transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s}.form-control:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}.form-control::-moz-placeholder{color:#777;opacity:1}.form-control:-ms-input-placeholder{color:#777}.form-control::-webkit-input-placeholder{color:#777}.form-control[disabled],.form-control[readonly],fieldset[disabled] .form-control{cursor:not-allowed;background-color:#eee;opacity:1}textarea.form-control{height:auto}input[type="date"],input[type="time"],input[type="datetime-local"],input[type="month"]{line-height:34px;line-height:1.4285714 \0}input[type="date"].input-sm,.form-horizontal .form-group-sm input.form-control[type="date"],.input-group-sm>input.form-control[type="date"],.input-group-sm>input.input-group-addon[type="date"],.input-group-sm>.input-group-btn>input.btn[type="date"],input[type="time"].input-sm,.form-horizontal .form-group-sm input.form-control[type="time"],.input-group-sm>input.form-control[type="time"],.input-group-sm>input.input-group-addon[type="time"],.input-group-sm>.input-group-btn>input.btn[type="time"],input[type="datetime-local"].input-sm,.form-horizontal .form-group-sm input.form-control[type="datetime-local"],.input-group-sm>input.form-control[type="datetime-local"],.input-group-sm>input.input-group-addon[type="datetime-local"],.input-group-sm>.input-group-btn>input.btn[type="datetime-local"],input[type="month"].input-sm,.form-horizontal .form-group-sm input.form-control[type="month"],.input-group-sm>input.form-control[type="month"],.input-group-sm>input.input-group-addon[type="month"],.input-group-sm>.input-group-btn>input.btn[type="month"]{line-height:30px}input[type="date"].input-lg,.form-horizontal .form-group-lg input.form-control[type="date"],.input-group-lg>input.form-control[type="date"],.input-group-lg>input.input-group-addon[type="date"],.input-group-lg>.input-group-btn>input.btn[type="date"],input[type="time"].input-lg,.form-horizontal .form-group-lg input.form-control[type="time"],.input-group-lg>input.form-control[type="time"],.input-group-lg>input.input-group-addon[type="time"],.input-group-lg>.input-group-btn>input.btn[type="time"],input[type="datetime-local"].input-lg,.form-horizontal .form-group-lg input.form-control[type="datetime-local"],.input-group-lg>input.form-control[type="datetime-local"],.input-group-lg>input.input-group-addon[type="datetime-local"],.input-group-lg>.input-group-btn>input.btn[type="datetime-local"],input[type="month"].input-lg,.form-horizontal .form-group-lg input.form-control[type="month"],.input-group-lg>input.form-control[type="month"],.input-group-lg>input.input-group-addon[type="month"],.input-group-lg>.input-group-btn>input.btn[type="month"]{line-height:46px}.form-group{margin-bottom:15px}.radio,.checkbox{position:relative;display:block;min-height:20px;margin-top:10px;margin-bottom:10px}.radio label,.checkbox label{padding-left:20px;margin-bottom:0;font-weight:400;cursor:pointer}.radio input[type="radio"],.radio-inline input[type="radio"],.checkbox input[type="checkbox"],.checkbox-inline input[type="checkbox"]{position:absolute;margin-left:-20px;margin-top:4px \9}.radio+.radio,.checkbox+.checkbox{margin-top:-5px}.radio-inline,.checkbox-inline{display:inline-block;padding-left:20px;margin-bottom:0;vertical-align:middle;font-weight:400;cursor:pointer}.radio-inline+.radio-inline,.checkbox-inline+.checkbox-inline{margin-top:0;margin-left:10px}input[type="radio"][disabled],input[type="radio"].disabled,fieldset[disabled] input[type="radio"],input[type="checkbox"][disabled],input[type="checkbox"].disabled,fieldset[disabled] input[type="checkbox"],.radio-inline.disabled,fieldset[disabled] .radio-inline,.checkbox-inline.disabled,fieldset[disabled] .checkbox-inline,.radio.disabled label,fieldset[disabled] .radio label,.checkbox.disabled label,fieldset[disabled] .checkbox label{cursor:not-allowed}.form-control-static{padding-top:7px;padding-bottom:7px;margin-bottom:0}.form-control-static.input-lg,.form-horizontal .form-group-lg .form-control-static.form-control,.input-group-lg>.form-control-static.form-control,.input-group-lg>.form-control-static.input-group-addon,.input-group-lg>.input-group-btn>.form-control-static.btn,.form-control-static.input-sm,.form-horizontal .form-group-sm .form-control-static.form-control,.input-group-sm>.form-control-static.form-control,.input-group-sm>.form-control-static.input-group-addon,.input-group-sm>.input-group-btn>.form-control-static.btn{padding-left:0;padding-right:0}.input-sm,.form-horizontal .form-group-sm .form-control,.input-group-sm>.form-control{height:30px;padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}.input-group-sm>.input-group-addon{height:30px;line-height:1.5}.input-group-sm>.input-group-btn>.btn{height:30px;padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}select.input-sm,.form-horizontal .form-group-sm select.form-control,.input-group-sm>select.form-control,.input-group-sm>select.input-group-addon,.input-group-sm>.input-group-btn>select.btn{height:30px;line-height:30px}textarea.input-sm,.form-horizontal .form-group-sm textarea.form-control,.input-group-sm>textarea.form-control,.input-group-sm>textarea.input-group-addon,.input-group-sm>.input-group-btn>textarea.btn,select[multiple].input-sm,.form-horizontal .form-group-sm select.form-control[multiple],.input-group-sm>select.form-control[multiple],.input-group-sm>select.input-group-addon[multiple],.input-group-sm>.input-group-btn>select.btn[multiple]{height:auto}.input-lg,.form-horizontal .form-group-lg .form-control,.input-group-lg>.form-control{height:46px;padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}.input-group-lg>.input-group-addon{height:46px;line-height:1.33}.input-group-lg>.input-group-btn>.btn{height:46px;padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}select.input-lg,.form-horizontal .form-group-lg select.form-control,.input-group-lg>select.form-control,.input-group-lg>select.input-group-addon,.input-group-lg>.input-group-btn>select.btn{height:46px;line-height:46px}textarea.input-lg,.form-horizontal .form-group-lg textarea.form-control,.input-group-lg>textarea.form-control,.input-group-lg>textarea.input-group-addon,.input-group-lg>.input-group-btn>textarea.btn,select[multiple].input-lg,.form-horizontal .form-group-lg select.form-control[multiple],.input-group-lg>select.form-control[multiple],.input-group-lg>select.input-group-addon[multiple],.input-group-lg>.input-group-btn>select.btn[multiple]{height:auto}.has-feedback{position:relative}.has-feedback .form-control{padding-right:42.5px}.form-control-feedback{position:absolute;top:25px;right:0;z-index:2;display:block;width:34px;height:34px;line-height:34px;text-align:center}.input-lg+.form-control-feedback,.form-horizontal .form-group-lg .form-control+.form-control-feedback,.input-group-lg>.form-control+.form-control-feedback,.input-group-lg>.input-group-addon+.form-control-feedback,.input-group-lg>.input-group-btn>.btn+.form-control-feedback{width:46px;height:46px;line-height:46px}.input-sm+.form-control-feedback,.form-horizontal .form-group-sm .form-control+.form-control-feedback,.input-group-sm>.form-control+.form-control-feedback,.input-group-sm>.input-group-addon+.form-control-feedback,.input-group-sm>.input-group-btn>.btn+.form-control-feedback{width:30px;height:30px;line-height:30px}.has-success .help-block,.has-success .control-label,.has-success .radio,.has-success .checkbox,.has-success .radio-inline,.has-success .checkbox-inline{color:#3c763d}.has-success .form-control{border-color:#3c763d;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-success .form-control:focus{border-color:#2b542c;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #67b168}.has-success .input-group-addon{color:#3c763d;border-color:#3c763d;background-color:#dff0d8}.has-success .form-control-feedback{color:#3c763d}.has-warning .help-block,.has-warning .control-label,.has-warning .radio,.has-warning .checkbox,.has-warning .radio-inline,.has-warning .checkbox-inline{color:#8a6d3b}.has-warning .form-control{border-color:#8a6d3b;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-warning .form-control:focus{border-color:#66512c;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #c0a16b}.has-warning .input-group-addon{color:#8a6d3b;border-color:#8a6d3b;background-color:#fcf8e3}.has-warning .form-control-feedback{color:#8a6d3b}.has-error .help-block,.has-error .control-label,.has-error .radio,.has-error .checkbox,.has-error .radio-inline,.has-error .checkbox-inline{color:#a94442}.has-error .form-control{border-color:#a94442;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.has-error .form-control:focus{border-color:#843534;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #ce8483}.has-error .input-group-addon{color:#a94442;border-color:#a94442;background-color:#f2dede}.has-error .form-control-feedback{color:#a94442}.has-feedback label.sr-only~.form-control-feedback{top:0}.help-block{display:block;margin-top:5px;margin-bottom:10px;color:#737373}.form-horizontal .radio,.form-horizontal .checkbox,.form-horizontal .radio-inline,.form-horizontal .checkbox-inline{margin-top:0;margin-bottom:0;padding-top:7px}.form-horizontal .radio,.form-horizontal .checkbox{min-height:27px}.form-horizontal .form-group{margin-left:-15px;margin-right:-15px}.form-horizontal .form-group:before{content:" ";display:table}.form-horizontal .form-group:after{content:" ";display:table;clear:both}.form-horizontal .has-feedback .form-control-feedback{top:0;right:15px}.btn{display:inline-block;vertical-align:middle;cursor:pointer;background-image:none;border:1px solid transparent;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.btn:focus,.btn:active:focus,.btn.active:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}.btn:hover,.btn:focus{color:#333;text-decoration:none}.btn:active,.btn.active{outline:0;background-image:none;box-shadow:inset 0 3px 5px rgba(0,0,0,.125)}.btn.disabled,.btn[disabled],fieldset[disabled] .btn{cursor:not-allowed;pointer-events:none;opacity:.65;filter:alpha(opacity=65);box-shadow:none}.btn-default{color:#333;background-color:#fff;border-color:#ccc}.btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open>.btn-default.dropdown-toggle{color:#333;background-color:#e6e6e6;border-color:#adadad}.btn-default:active,.btn-default.active,.open>.btn-default.dropdown-toggle{background-image:none}.btn-default.disabled,.btn-default.disabled:hover,.btn-default.disabled:focus,.btn-default.disabled:active,.btn-default.disabled.active,.btn-default[disabled],.btn-default[disabled]:hover,.btn-default[disabled]:focus,.btn-default[disabled]:active,.btn-default[disabled].active,fieldset[disabled] .btn-default,fieldset[disabled] .btn-default:hover,fieldset[disabled] .btn-default:focus,fieldset[disabled] .btn-default:active,fieldset[disabled] .btn-default.active{background-color:#fff;border-color:#ccc}.btn-default .badge{color:#fff;background-color:#333}.btn-primary{color:#fff;background-color:#428bca;border-color:#357ebd}.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open>.btn-primary.dropdown-toggle{color:#fff;background-color:#3071a9;border-color:#285e8e}.btn-primary:active,.btn-primary.active,.open>.btn-primary.dropdown-toggle{background-image:none}.btn-primary.disabled,.btn-primary.disabled:hover,.btn-primary.disabled:focus,.btn-primary.disabled:active,.btn-primary.disabled.active,.btn-primary[disabled],.btn-primary[disabled]:hover,.btn-primary[disabled]:focus,.btn-primary[disabled]:active,.btn-primary[disabled].active,fieldset[disabled] .btn-primary,fieldset[disabled] .btn-primary:hover,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:active,fieldset[disabled] .btn-primary.active{background-color:#428bca;border-color:#357ebd}.btn-primary .badge{color:#428bca;background-color:#fff}.btn-success{color:#fff;background-color:#5cb85c;border-color:#4cae4c}.btn-success:hover,.btn-success:focus,.btn-success:active,.btn-success.active,.open>.btn-success.dropdown-toggle{color:#fff;background-color:#449d44;border-color:#398439}.btn-success:active,.btn-success.active,.open>.btn-success.dropdown-toggle{background-image:none}.btn-success.disabled,.btn-success.disabled:hover,.btn-success.disabled:focus,.btn-success.disabled:active,.btn-success.disabled.active,.btn-success[disabled],.btn-success[disabled]:hover,.btn-success[disabled]:focus,.btn-success[disabled]:active,.btn-success[disabled].active,fieldset[disabled] .btn-success,fieldset[disabled] .btn-success:hover,fieldset[disabled] .btn-success:focus,fieldset[disabled] .btn-success:active,fieldset[disabled] .btn-success.active{background-color:#5cb85c;border-color:#4cae4c}.btn-success .badge{color:#5cb85c;background-color:#fff}.btn-info{color:#fff;background-color:#5bc0de;border-color:#46b8da}.btn-info:hover,.btn-info:focus,.btn-info:active,.btn-info.active,.open>.btn-info.dropdown-toggle{color:#fff;background-color:#31b0d5;border-color:#269abc}.btn-info:active,.btn-info.active,.open>.btn-info.dropdown-toggle{background-image:none}.btn-info.disabled,.btn-info.disabled:hover,.btn-info.disabled:focus,.btn-info.disabled:active,.btn-info.disabled.active,.btn-info[disabled],.btn-info[disabled]:hover,.btn-info[disabled]:focus,.btn-info[disabled]:active,.btn-info[disabled].active,fieldset[disabled] .btn-info,fieldset[disabled] .btn-info:hover,fieldset[disabled] .btn-info:focus,fieldset[disabled] .btn-info:active,fieldset[disabled] .btn-info.active{background-color:#5bc0de;border-color:#46b8da}.btn-info .badge{color:#5bc0de;background-color:#fff}.btn-warning{color:#fff;background-color:#f0ad4e;border-color:#eea236}.btn-warning:hover,.btn-warning:focus,.btn-warning:active,.btn-warning.active,.open>.btn-warning.dropdown-toggle{color:#fff;background-color:#ec971f;border-color:#d58512}.btn-warning:active,.btn-warning.active,.open>.btn-warning.dropdown-toggle{background-image:none}.btn-warning.disabled,.btn-warning.disabled:hover,.btn-warning.disabled:focus,.btn-warning.disabled:active,.btn-warning.disabled.active,.btn-warning[disabled],.btn-warning[disabled]:hover,.btn-warning[disabled]:focus,.btn-warning[disabled]:active,.btn-warning[disabled].active,fieldset[disabled] .btn-warning,fieldset[disabled] .btn-warning:hover,fieldset[disabled] .btn-warning:focus,fieldset[disabled] .btn-warning:active,fieldset[disabled] .btn-warning.active{background-color:#f0ad4e;border-color:#eea236}.btn-warning .badge{color:#f0ad4e;background-color:#fff}.btn-danger{color:#fff;background-color:#d9534f;border-color:#d43f3a}.btn-danger:hover,.btn-danger:focus,.btn-danger:active,.btn-danger.active,.open>.btn-danger.dropdown-toggle{color:#fff;background-color:#c9302c;border-color:#ac2925}.btn-danger:active,.btn-danger.active,.open>.btn-danger.dropdown-toggle{background-image:none}.btn-danger.disabled,.btn-danger.disabled:hover,.btn-danger.disabled:focus,.btn-danger.disabled:active,.btn-danger.disabled.active,.btn-danger[disabled],.btn-danger[disabled]:hover,.btn-danger[disabled]:focus,.btn-danger[disabled]:active,.btn-danger[disabled].active,fieldset[disabled] .btn-danger,fieldset[disabled] .btn-danger:hover,fieldset[disabled] .btn-danger:focus,fieldset[disabled] .btn-danger:active,fieldset[disabled] .btn-danger.active{background-color:#d9534f;border-color:#d43f3a}.btn-danger .badge{color:#d9534f;background-color:#fff}.btn-link{color:#428bca;font-weight:400;cursor:pointer;border-radius:0}.btn-link,.btn-link:active,.btn-link[disabled],fieldset[disabled] .btn-link{background-color:transparent;box-shadow:none}.btn-link,.btn-link:hover,.btn-link:focus,.btn-link:active{border-color:transparent}.btn-link:hover,.btn-link:focus{color:#2a6496;text-decoration:underline;background-color:transparent}.btn-link[disabled]:hover,.btn-link[disabled]:focus,fieldset[disabled] .btn-link:hover,fieldset[disabled] .btn-link:focus{color:#777;text-decoration:none}.btn-lg{padding:10px 16px;font-size:18px;line-height:1.33;border-radius:6px}.btn-sm{padding:5px 10px}.btn-sm,.btn-xs{font-size:12px;line-height:1.5;border-radius:3px}.btn-xs{padding:1px 5px}.btn-block{display:block;width:100%}.btn-block+.btn-block{margin-top:5px}input[type="submit"].btn-block,input[type="reset"].btn-block,input[type="button"].btn-block{width:100%}.fade{opacity:0;transition:opacity .15s linear}.fade.in{opacity:1}.collapse{display:none}.collapse.in{display:block}tr.collapse.in{display:table-row}tbody.collapse.in{display:table-row-group}.collapsing{position:relative;height:0;overflow:hidden;transition:height .35s ease}.input-group{position:relative;display:table;border-collapse:separate}.input-group[class*="col-"]{float:none;padding-left:0;padding-right:0}.input-group .form-control{position:relative;z-index:2;float:left;width:100%;margin-bottom:0}.input-group-addon,.input-group-btn,.input-group .form-control{display:table-cell}.input-group-addon:not(:first-child):not(:last-child),.input-group-btn:not(:first-child):not(:last-child),.input-group .form-control:not(:first-child):not(:last-child){border-radius:0}.input-group-addon{white-space:nowrap}.input-group-addon,.input-group-btn{width:1%;vertical-align:middle}.input-group-addon{padding:6px 12px;font-size:14px;font-weight:400;line-height:1;color:#555;text-align:center;background-color:#eee;border:1px solid #ccc;border-radius:4px}.input-group-addon.input-sm,.form-horizontal .form-group-sm .input-group-addon.form-control,.input-group-sm>.input-group-addon,.input-group-sm>.input-group-btn>.input-group-addon.btn{padding:5px 10px;font-size:12px;border-radius:3px}.input-group-addon.input-lg,.form-horizontal .form-group-lg .input-group-addon.form-control,.input-group-lg>.input-group-addon,.input-group-lg>.input-group-btn>.input-group-addon.btn{padding:10px 16px;font-size:18px;border-radius:6px}.input-group-addon input[type="radio"],.input-group-addon input[type="checkbox"]{margin-top:0}.input-group .form-control:first-child,.input-group-addon:first-child,.input-group-btn:first-child>.btn,.input-group-btn:first-child>.btn-group>.btn,.input-group-btn:first-child>.dropdown-toggle,.input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle),.input-group-btn:last-child>.btn-group:not(:last-child)>.btn{border-bottom-right-radius:0;border-top-right-radius:0}.input-group-addon:first-child{border-right:0}.input-group .form-control:last-child,.input-group-addon:last-child,.input-group-btn:last-child>.btn,.input-group-btn:last-child>.btn-group>.btn,.input-group-btn:last-child>.dropdown-toggle,.input-group-btn:first-child>.btn:not(:first-child),.input-group-btn:first-child>.btn-group:not(:first-child)>.btn{border-bottom-left-radius:0;border-top-left-radius:0}.input-group-addon:last-child{border-left:0}.input-group-btn{font-size:0;white-space:nowrap}.input-group-btn,.input-group-btn>.btn{position:relative}.input-group-btn>.btn+.btn{margin-left:-1px}.input-group-btn>.btn:hover,.input-group-btn>.btn:focus,.input-group-btn>.btn:active{z-index:2}.input-group-btn:first-child>.btn,.input-group-btn:first-child>.btn-group{margin-right:-1px}.input-group-btn:last-child>.btn,.input-group-btn:last-child>.btn-group{margin-left:-1px}.pagination{display:inline-block;padding-left:0;margin:20px 0;border-radius:4px}.pagination>li{display:inline}.pagination>li>a,.pagination>li>span{position:relative;float:left;padding:6px 12px;line-height:1.4285714;text-decoration:none;color:#428bca;background-color:#fff;border:1px solid #ddd;margin-left:-1px}.pagination>li:first-child>a,.pagination>li:first-child>span{margin-left:0;border-bottom-left-radius:4px;border-top-left-radius:4px}.pagination>li:last-child>a,.pagination>li:last-child>span{border-bottom-right-radius:4px;border-top-right-radius:4px}.pagination>li>a:hover,.pagination>li>a:focus,.pagination>li>span:hover,.pagination>li>span:focus{color:#2a6496;background-color:#eee;border-color:#ddd}.pagination>.active>a,.pagination>.active>a:hover,.pagination>.active>a:focus,.pagination>.active>span,.pagination>.active>span:hover,.pagination>.active>span:focus{z-index:2;color:#fff;background-color:#428bca;border-color:#428bca;cursor:default}.pagination>.disabled>span,.pagination>.disabled>span:hover,.pagination>.disabled>span:focus,.pagination>.disabled>a,.pagination>.disabled>a:hover,.pagination>.disabled>a:focus{color:#777;background-color:#fff;border-color:#ddd;cursor:not-allowed}.pagination-lg>li>a,.pagination-lg>li>span{padding:10px 16px;font-size:18px}.pagination-lg>li:first-child>a,.pagination-lg>li:first-child>span{border-bottom-left-radius:6px;border-top-left-radius:6px}.pagination-lg>li:last-child>a,.pagination-lg>li:last-child>span{border-bottom-right-radius:6px;border-top-right-radius:6px}.pagination-sm>li>a,.pagination-sm>li>span{padding:5px 10px;font-size:12px}.pagination-sm>li:first-child>a,.pagination-sm>li:first-child>span{border-bottom-left-radius:3px;border-top-left-radius:3px}.pagination-sm>li:last-child>a,.pagination-sm>li:last-child>span{border-bottom-right-radius:3px;border-top-right-radius:3px}.close{float:right;font-size:21px;font-weight:700;line-height:1;color:#000;text-shadow:0 1px 0 #fff;opacity:.2;filter:alpha(opacity=20)}.close:hover,.close:focus{color:#000;text-decoration:none;cursor:pointer;opacity:.5;filter:alpha(opacity=50)}button.close{padding:0;cursor:pointer;background:0 0;border:0;-webkit-appearance:none}.modal-open,.modal{overflow:hidden}.modal{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:1050;-webkit-overflow-scrolling:touch;outline:0}.modal.fade .modal-dialog{transform:translate3d(0,-25%,0);transition:transform .3s ease-out}.modal.in .modal-dialog{transform:translate3d(0,0,0)}.modal-open .modal{overflow-x:hidden;overflow-y:auto}.modal-dialog{position:relative;width:auto;margin:10px}.modal-content{position:relative;background-color:#fff;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:6px;box-shadow:0 3px 9px rgba(0,0,0,.5);background-clip:padding-box;outline:0}.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}.modal-backdrop.fade{opacity:0;filter:alpha(opacity=0)}.modal-backdrop.in{opacity:.5;filter:alpha(opacity=50)}.modal-header{padding:15px;border-bottom:1px solid #e5e5e5;min-height:16.4285714px}.modal-header .close{margin-top:-2px}.modal-title{margin:0;line-height:1.4285714}.modal-body{position:relative;padding:15px}.modal-footer{padding:15px;text-align:right;border-top:1px solid #e5e5e5}.modal-footer:before,.modal-footer:after{content:" ";display:table}.modal-footer:after{clear:both}.modal-footer .btn+.btn{margin-left:5px;margin-bottom:0}.modal-footer .btn-group .btn+.btn{margin-left:-1px}.modal-footer .btn-block+.btn-block{margin-left:0}.modal-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.clearfix:before,.clearfix:after{content:" ";display:table}.clearfix:after{clear:both}.center-block{display:block;margin-left:auto;margin-right:auto}.pull-right{float:right!important}.pull-left{float:left!important}.hide{display:none!important}.show{display:block!important}.invisible{visibility:hidden}.text-hide{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0}.hidden{display:none!important;visibility:hidden!important}.affix{position:fixed;transform:translate3d(0,0,0)}.hljs{display:block;overflow-x:auto;padding:.5em;background:#002b36;color:#839496;-webkit-text-size-adjust:none}.hljs-comment,.hljs-template_comment,.diff .hljs-header,.hljs-doctype,.hljs-pi,.lisp .hljs-string,.hljs-javadoc{color:#586e75}.hljs-keyword,.hljs-winutils,.method,.hljs-addition,.css .hljs-tag,.hljs-request,.hljs-status,.nginx .hljs-title{color:#859900}.hljs-number,.hljs-command,.hljs-string,.hljs-tag .hljs-value,.hljs-rules .hljs-value,.hljs-phpdoc,.hljs-dartdoc,.tex .hljs-formula,.hljs-regexp,.hljs-hexcolor,.hljs-link_url{color:#2aa198}.hljs-title,.hljs-localvars,.hljs-chunk,.hljs-decorator,.hljs-built_in,.hljs-identifier,.vhdl .hljs-literal,.hljs-id,.css .hljs-function{color:#268bd2}.hljs-attribute,.hljs-variable,.lisp .hljs-body,.smalltalk .hljs-number,.hljs-constant,.hljs-class .hljs-title,.hljs-parent,.hljs-type,.hljs-link_reference{color:#b58900}.hljs-preprocessor,.hljs-preprocessor .hljs-keyword,.hljs-pragma,.hljs-shebang,.hljs-symbol,.hljs-symbol .hljs-string,.diff .hljs-change,.hljs-special,.hljs-attr_selector,.hljs-subst,.hljs-cdata,.css .hljs-pseudo,.hljs-header{color:#cb4b16}.hljs-deletion,.hljs-important{color:#dc322f}.hljs-link_label{color:#6c71c4}.tex .hljs-formula{background:#073642}*,*:before,*:after{box-sizing:border-box}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:0 0}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:700}dfn{font-style:italic}h1{margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}images{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd{font-size:1em}code,kbd,pre,samp{font-family:monospace,monospace}samp{font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;margin-right:5px}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:700}table{border-collapse:collapse;border-spacing:0}.debug{background-color:#ffc0cb!important}.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ir{background-color:transparent;border:0;overflow:hidden}.ir::before{content:'';display:block;height:150%;width:0}html{font-size:.875em;background:#fff;color:#373D49}html,body{font-family:Georgia,Cambria,serif;height:100%}body{font-size:1rem;font-weight:400;line-height:2rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}li{font-feature-settings:'kern' 1,'onum' 1,'liga' 1;margin-left:1rem}li>ul,li>ol{margin-bottom:0}p{padding-top:.66001rem;font-feature-settings:'kern' 1,'onum' 1,'liga' 1;margin-top:0}p,pre{margin-bottom:1.33999rem}pre{font-size:1rem;padding:.66001rem 9.5px 9.5px;line-height:2rem;background:linear-gradient(to bottom,#fff 0,#fff .75rem,#f5f7fa .75rem,#f5f7fa 2.75rem,#fff 2.75rem,#fff 4rem);background-size:100% 4rem;border-color:#D3DAEA}blockquote{margin:0}blockquote p{font-size:1rem;margin-bottom:.33999rem;font-style:italic;padding:.66001rem 1rem 1rem;border-left:3px solid #A0AABF}th,td{padding:12px}h1,h2,h3,h4,h5,h6{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-feature-settings:'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;font-style:normal;font-weight:600;margin-top:0}h1{line-height:3rem;font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h2,h3{line-height:3rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}a{cursor:pointer;color:#35D7BB;text-decoration:none}a:hover,a:focus{border-bottom-color:#35D7BB;color:#dff9f4}img{height:auto;max-width:100%}dt{font-style:italic;font-weight:600}.g{display:block}.g:after{clear:both;content:'';display:table}.g-b{float:left;margin:0;width:100%}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--center{display:block;float:none;margin:0 auto}.g-b--right{float:right}.g-b--1of1{width:100%}.g-b--1of2,.g-b--2of4,.g-b--3of6,.g-b--4of8,.g-b--5of10,.g-b--6of12{width:50%}.g-b--1of3,.g-b--2of6,.g-b--4of12{width:33.333%}.g-b--2of3,.g-b--4of6,.g-b--8of12{width:66.666%}.g-b--1of4,.g-b--2of8,.g-b--3of12{width:25%}.g-b--3of4,.g-b--6of8,.g-b--9of12{width:75%}.g-b--1of5,.g-b--2of10{width:20%}.g-b--2of5,.g-b--4of10{width:40%}.g-b--3of5,.g-b--6of10{width:60%}.g-b--4of5,.g-b--8of10{width:80%}.g-b--1of6,.g-b--2of12{width:16.666%}.g-b--5of6,.g-b--10of12{width:83.333%}.g-b--1of8{width:12.5%}.g-b--3of8{width:37.5%}.g-b--5of8{width:62.5%}.g-b--7of8{width:87.5%}.g-b--1of10{width:10%}.g-b--3of10{width:30%}.g-b--7of10{width:70%}.g-b--9of10{width:90%}.g-b--1of12{width:8.333%}.g-b--5of12{width:41.666%}.g-b--7of12{width:58.333%}.g-b--11of12{width:91.666%}.g-b--push--1of1{margin-left:100%}.g-b--push--1of2,.g-b--push--2of4,.g-b--push--3of6,.g-b--push--4of8,.g-b--push--5of10,.g-b--push--6of12{margin-left:50%}.g-b--push--1of3,.g-b--push--2of6,.g-b--push--4of12{margin-left:33.333%}.g-b--push--2of3,.g-b--push--4of6,.g-b--push--8of12{margin-left:66.666%}.g-b--push--1of4,.g-b--push--2of8,.g-b--push--3of12{margin-left:25%}.g-b--push--3of4,.g-b--push--6of8,.g-b--push--9of12{margin-left:75%}.g-b--push--1of5,.g-b--push--2of10{margin-left:20%}.g-b--push--2of5,.g-b--push--4of10{margin-left:40%}.g-b--push--3of5,.g-b--push--6of10{margin-left:60%}.g-b--push--4of5,.g-b--push--8of10{margin-left:80%}.g-b--push--1of6,.g-b--push--2of12{margin-left:16.666%}.g-b--push--5of6,.g-b--push--10of12{margin-left:83.333%}.g-b--push--1of8{margin-left:12.5%}.g-b--push--3of8{margin-left:37.5%}.g-b--push--5of8{margin-left:62.5%}.g-b--push--7of8{margin-left:87.5%}.g-b--push--1of10{margin-left:10%}.g-b--push--3of10{margin-left:30%}.g-b--push--7of10{margin-left:70%}.g-b--push--9of10{margin-left:90%}.g-b--push--1of12{margin-left:8.333%}.g-b--push--5of12{margin-left:41.666%}.g-b--push--7of12{margin-left:58.333%}.g-b--push--11of12{margin-left:91.666%}.g-b--pull--1of1{margin-right:100%}.g-b--pull--1of2,.g-b--pull--2of4,.g-b--pull--3of6,.g-b--pull--4of8,.g-b--pull--5of10,.g-b--pull--6of12{margin-right:50%}.g-b--pull--1of3,.g-b--pull--2of6,.g-b--pull--4of12{margin-right:33.333%}.g-b--pull--2of3,.g-b--pull--4of6,.g-b--pull--8of12{margin-right:66.666%}.g-b--pull--1of4,.g-b--pull--2of8,.g-b--pull--3of12{margin-right:25%}.g-b--pull--3of4,.g-b--pull--6of8,.g-b--pull--9of12{margin-right:75%}.g-b--pull--1of5,.g-b--pull--2of10{margin-right:20%}.g-b--pull--2of5,.g-b--pull--4of10{margin-right:40%}.g-b--pull--3of5,.g-b--pull--6of10{margin-right:60%}.g-b--pull--4of5,.g-b--pull--8of10{margin-right:80%}.g-b--pull--1of6,.g-b--pull--2of12{margin-right:16.666%}.g-b--pull--5of6,.g-b--pull--10of12{margin-right:83.333%}.g-b--pull--1of8{margin-right:12.5%}.g-b--pull--3of8{margin-right:37.5%}.g-b--pull--5of8{margin-right:62.5%}.g-b--pull--7of8{margin-right:87.5%}.g-b--pull--1of10{margin-right:10%}.g-b--pull--3of10{margin-right:30%}.g-b--pull--7of10{margin-right:70%}.g-b--pull--9of10{margin-right:90%}.g-b--pull--1of12{margin-right:8.333%}.g-b--pull--5of12{margin-right:41.666%}.g-b--pull--7of12{margin-right:58.333%}.g-b--pull--11of12{margin-right:91.666%}.splashscreen{position:fixed;top:0;left:0;width:100%;height:100%;background-color:#373D49;z-index:22}.splashscreen-dillinger{width:260px;height:auto;display:block;margin:0 auto;padding-bottom:3rem}.splashscreen p{font-size:1.25rem;padding-top:.56251rem;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;text-align:center;max-width:500px;margin:0 auto;color:#FFF}.sp-center{position:relative;transform:translateY(-50%);top:50%}.open-menu>.wrapper{overflow-x:hidden}.page{margin:0 auto;position:relative;top:0;left:0;width:100%;height:100%;z-index:2;transition:all .25s ease-in-out;background-color:#fff;padding-top:51px;will-change:left}.open-menu .page{left:270px}.title{line-height:1rem;font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem;font-weight:500;color:#A0AABF;letter-spacing:1px;text-transform:uppercase;padding-left:16px;padding-right:16px;margin-top:1rem}.split-preview .title{padding-left:0}.title-document{line-height:1rem;font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem;font-weight:400;font-family:"Ubuntu Mono",Monaco;color:#373D49;padding-left:16px;padding-right:16px;width:80%;min-width:300px;outline:0;border:none}.icon{display:block;margin:0 auto;width:36px;height:36px;border-radius:3px;text-align:center}.icon svg{display:inline-block;margin-left:auto;margin-right:auto}.icon-preview{background-color:#373D49;line-height:40px}.icon-preview svg{width:19px;height:12px}.icon-settings{background-color:#373D49;line-height:44px}.icon-settings svg{width:18px;height:18px}.icon-link{width:16px;height:16px;line-height:1;margin-right:24px;text-align:right}.navbar{background-color:#373D49;height:51px;width:100%;position:fixed;top:0;left:0;z-index:6;transition:all .25s ease-in-out;will-change:left}.navbar:after{content:"";display:table;clear:both}.open-menu .navbar{left:270px}.navbar-brand{float:left;margin:0 0 0 24px;padding:0;line-height:42px}.navbar-brand svg{width:85px;height:11px}.nav-left{float:left}.nav-right{float:right}.nav-sidebar{width:100%}.menu{list-style:none;margin:0;padding:0}.menu a{border:0;color:#A0AABF;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;outline:none;text-transform:uppercase}.menu a:hover{color:#35D7BB}.menu .menu-item{border:0;display:none;float:left;margin:0;position:relative}.menu .menu-item>a{display:block;font-size:12px;height:51px;letter-spacing:1px;line-height:51px;padding:0 24px}.menu .menu-item--settings,.menu .menu-item--preview,.menu .menu-item--save-to.in-sidebar,.menu .menu-item--import-from.in-sidebar,.menu .menu-item--link-unlink.in-sidebar,.menu .menu-item--documents.in-sidebar{display:block}.menu .menu-item--documents{padding-bottom:1rem}.menu .menu-item.open>a{background-color:#1D212A}.menu .menu-item-icon>a{height:auto;padding:0}.menu .menu-item-icon:hover>a{background-color:transparent}.menu .menu-link.open i{background-color:#1D212A}.menu .menu-link.open g{fill:#35D7BB}.menu .menu-link-preview,.menu .menu-link-settings{margin-top:8px;width:51px}.menu-sidebar{width:100%}.menu-sidebar .menu-item{float:none;margin-bottom:1px;width:100%}.menu-sidebar .menu-item.open>a{background-color:#373D49}.menu-sidebar .open .caret{transform:rotate(180deg)}.menu-sidebar>.menu-item:hover .dropdown a,.menu-sidebar>.menu-item:hover .settings a{background-color:transparent}.menu-sidebar .menu-link{background-color:#373D49;font-weight:600}.menu-sidebar .menu-link:after{content:"";display:table;clear:both}.menu-sidebar .menu-link>span{float:left}.menu-sidebar .menu-link>.caret{float:right;text-align:right;top:22px}.menu-sidebar .dropdown,.menu-sidebar .settings{background-color:transparent;position:static;width:100%}.dropdown{position:absolute;right:0;top:51px;width:188px}.dropdown,.settings{display:none;background-color:#1D212A}.dropdown{padding:0}.dropdown,.settings,.sidebar-list{list-style:none;margin:0}.sidebar-list{padding:0}.dropdown li{margin:32px 0;padding:0 0 0 32px}.dropdown li,.settings li{line-height:1}.sidebar-list li{line-height:1;margin:32px 0;padding:0 0 0 32px}.dropdown a{color:#D0D6E2}.dropdown a,.settings a,.sidebar-list a{display:block;text-transform:none}.sidebar-list a{color:#D0D6E2}.dropdown a:after,.settings a:after,.sidebar-list a:after{content:"";display:table;clear:both}.dropdown .icon,.settings .icon,.sidebar-list .icon{float:right}.open .dropdown,.open .settings,.open .sidebar-list{display:block}.open .dropdown.collapse,.open .collapse.settings,.open .sidebar-list.collapse{display:none}.open .dropdown.collapse.in,.open .collapse.in.settings,.open .sidebar-list.collapse.in{display:block}.dropdown .unlinked .icon,.settings .unlinked .icon,.sidebar-list .unlinked .icon{opacity:.3}.dropdown.documents li,.documents.settings li,.sidebar-list.documents li{background-image:url("../img/icons/file.svg");background-position:240px center;background-repeat:no-repeat;background-size:14px 16px;padding:3px 32px}.dropdown.documents li.octocat,.documents.settings li.octocat,.sidebar-list.documents li.octocat{background-image:url("../img/icons/octocat.svg");background-position:234px center;background-size:24px 24px}.dropdown.documents li:last-child,.documents.settings li:last-child,.sidebar-list.documents li:last-child{margin-bottom:1rem}.dropdown.documents li.active a,.documents.settings li.active a,.sidebar-list.documents li.active a{color:#35D7BB}.settings{position:fixed;top:67px;right:16px;border-radius:3px;width:288px;background-color:#373D49;padding:16px;z-index:7}.show-settings .settings{display:block}.settings .has-checkbox{float:left}.settings form{display:-ms-flexbox;display:flex;-ms-flex-direction:row;flex-direction:row;-ms-flex-pack:justify;justify-content:space-between}.settings input{width:20%}.settings a{font-size:1.25rem;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;line-height:28px;color:#D0D6E2}.settings a:after{content:"";display:table;clear:both}.settings a:hover{color:#35D7BB}.settings li{border-bottom:1px solid #4F535B;margin:0;padding:16px 0}.settings li:last-child{border-bottom:none}.brand{border:none;display:block}.brand:hover g{fill:#35D7BB}.toggle{display:block;float:left;height:16px;padding:25px 16px 26px;width:40px}.toggle span:after,.toggle span:before{content:'';left:0;position:absolute;top:-6px}.toggle span:after{top:6px}.toggle span{display:block;position:relative}.toggle span,.toggle span:after,.toggle span:before{-webkit-backface-visibility:hidden;backface-visibility:hidden;background-color:#D3DAEA;height:2px;transition:all .3s;width:20px}.open-menu .toggle span{background-color:transparent}.open-menu .toggle span:before{transform:rotate(45deg) translate(3px,3px)}.open-menu .toggle span:after{transform:rotate(-45deg) translate(5px,-6px)}.caret{display:inline-block;width:0;height:0;margin-left:6px;vertical-align:middle;position:relative;top:-1px;border-top:4px solid;border-right:4px solid transparent;border-left:4px solid transparent}.sidebar{overflow:auto;height:100%;padding-right:15px;padding-bottom:15px;width:285px}.sidebar-wrapper{-webkit-overflow-scrolling:touch;background-color:#2B2F36;left:0;height:100%;overflow-y:hidden;position:fixed;top:0;width:285px;z-index:1}.sidebar-branding{width:160px;padding:0;margin:16px auto}.header{border-bottom:1px solid #E8E8E8;position:relative}.words,.characters{line-height:1rem;font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem;font-weight:500;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;z-index:5;position:absolute;right:16px;top:0}.words span,.characters span{color:#A0AABF}.words .counter,.characters .counter{color:#000}.words+.characters{top:22px}.mr10{margin-right:10px}.btn{text-align:center;display:inline-block;width:100%;text-transform:uppercase;font-weight:600;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;text-shadow:0 1px 0 #1b8b77;padding:16px 24px;background-color:#35D7BB;border-radius:3px;margin:0 auto 16px;line-height:1;color:#fff;transition:all .15s linear;-webkit-font-smoothing:antialiased}.btn--new,.btn--save{display:block;width:238px}.btn--new:hover,.btn--new:focus,.btn--save:hover,.btn--save:focus{color:#fff;border-bottom-color:transparent;box-shadow:0 1px 3px #24b59c;text-shadow:0 1px 0 #24b59c}.btn--save{background-color:#4A5261;text-shadow:0 1px 1px #1e2127}.btn--save:hover,.btn--save:focus{color:#fff;border-bottom-color:transparent;box-shadow:0 1px 5px #08090a;text-shadow:none}.btn--delete{display:block;width:238px;background-color:transparent;font-size:12px;text-shadow:none}.btn--delete:hover,.btn--delete:focus{color:#fff;border-bottom-color:transparent;text-shadow:0 1px 0 #08090a;opacity:.8}.btn--delete-modal,.btn--ok,.btn--close{border-top:0;background-color:#4A5261;text-shadow:0 1px 0 #08090a;margin:0}.btn--delete-modal:hover,.btn--delete-modal:focus,.btn--ok:hover,.btn--ok:focus,.btn--close:hover,.btn--close:focus{color:#fff;background-color:#292d36;text-shadow:none}.btn--delete-modal{display:inline;width:auto}.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background-color:rgba(55,61,73,.8);transition:all .25s ease-in-out;transition-timing-function:ease-out;will-change:left,opacity,visibility;z-index:5;opacity:0;visibility:hidden}.show-settings .overlay{visibility:visible;opacity:1}.switch{float:right;line-height:1}.switch input{display:none}.switch small{display:inline-block;cursor:pointer;padding:0 24px 0 0;transition:all ease .2s;background-color:#2B2F36;border-color:#2B2F36}.switch small,.switch small:before{border-radius:30px;box-shadow:inset 0 0 2px 0 #14171F}.switch small:before{display:block;content:'';width:28px;height:28px;background:#fff}.switch.checked small{padding-right:0;padding-left:24px;background-color:#35D7BB;box-shadow:none}.modal--dillinger.about .modal-dialog{font-size:1.25rem;max-width:500px}.modal--dillinger.scope .modal-dialog{max-width:300px;margin:5rem auto}.modal--dillinger .modal-dialog{max-width:600px;width:auto;margin:5rem auto}.modal--dillinger .modal-content{background:#373D49;border-radius:3px;box-shadow:0 2px 5px 0 #2C3B59;color:#fff;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;padding:2rem}.modal--dillinger ul{list-style-type:disc;margin:1rem 0;padding:0 0 0 1rem}.modal--dillinger li{padding:0;margin:0}.modal--dillinger .modal-header{border:0;padding:0}.modal--dillinger .modal-body{padding:0}.modal--dillinger .modal-footer{border:0;padding:0}.modal--dillinger .close{color:#fff;opacity:1}.modal-backdrop{background-color:#373D49}.pagination--dillinger{padding:0!important;margin:1.5rem 0!important;display:-ms-flexbox;display:flex;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-direction:row;flex-direction:row;-ms-flex-align:center;align-items:center;-ms-flex-line-pack:stretch;align-content:stretch}.pagination--dillinger li{display:-ms-flexbox;display:flex;-ms-flex-positive:1;flex-grow:1;text-align:center}.pagination--dillinger li:first-child>a,.pagination--dillinger li.disabled>a,.pagination--dillinger li.disabled>a:hover,.pagination--dillinger li.disabled>a:focus,.pagination--dillinger li>a{background-color:transparent;border-color:#4F535B;border-right-color:transparent}.pagination--dillinger li.active>a,.pagination--dillinger li.active>a:hover,.pagination--dillinger li.active>a:focus{border-color:#4A5261;background-color:#4A5261;color:#fff}.pagination--dillinger li>a{float:none;color:#fff;width:100%;display:block;text-align:center;margin:0;border-right-color:transparent;padding:6px}.pagination--dillinger li>a:hover,.pagination--dillinger li>a:focus{border-color:#35D7BB;background-color:#35D7BB;color:#fff}.pagination--dillinger li:last-child a{border-color:#4F535B}.pagination--dillinger li:first-child a{border-right-color:transparent}.diNotify{position:absolute;z-index:9999;left:0;right:0;top:0;margin:0 auto;max-width:400px;text-align:center;transition:top .5s ease-in-out,opacity .5s ease-in-out;visibility:hidden}.diNotify-body{-webkit-font-smoothing:antialiased;background-color:#35D7BB;background:#666E7F;border-radius:3px;color:#fff;font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;overflow:hidden;padding:1rem 2rem .5rem;display:-ms-flexbox;display:flex;-ms-flex-align:baseline;align-items:baseline;-ms-flex-pack:center;justify-content:center}.diNotify-icon{display:block;width:16px;height:16px;line-height:16px;position:relative;top:3px}.diNotify-message{padding-left:1rem}.zen-wrapper{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:10;background-color:#FFF;opacity:0;transition:opacity .25s ease-in-out}.zen-wrapper.on{opacity:1}.enter-zen-mode{background-image:url("../img/icons/enter-zen.svg");right:.5rem;top:.313rem;display:none}.enter-zen-mode,.close-zen-mode{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0;background-repeat:no-repeat;width:32px;height:32px;display:block;position:absolute}.close-zen-mode{background-image:url("../img/icons/exit-zen.svg");right:1rem;top:1rem}.zen-page{position:relative;top:0;bottom:0;z-index:11;height:100%;width:100%}#zen{font-size:1.25rem;width:300px;height:80%;margin:0 auto;position:relative;top:10%}#zen:before,#zen:after{content:"";position:absolute;height:10%;width:100%;z-index:12;pointer-events:none}#preview .table{width:auto}.ui-resizable{position:relative}.ui-resizable-handle{position:absolute;font-size:.1px;z-index:99999;display:block}.ui-resizable-e{background-color:#666;border-right:8px solid #e8e8e8;border-left:1px solid #222;width:10px;z-index:88!important;position:relative}.ui-resizable-e:after{content:"-";display:block;position:absolute;top:calc(50% - 16px);left:0;height:25px;width:2px;background-color:rgba(0,0,0,.4);margin:3px}#editor{cursor:ew-resize;position:relative;z-index:auto}.profile-pic{float:left;width:250px}#_default_ a::before{color:#A0AABF}#_default_ img{display:none}#_default_ #_default_{display:block;float:left;max-width:38%;word-wrap:break-word}#_default_ .default-ad{display:none}#_default_ ._default_{display:block}#_default_ a{color:#35d7bb;text-decoration:none}#_default_ a:hover{color:#8ae8d8}#_default_ .default-image{display:none}#_default_ .default-title:after{content:" — "}#_default_ .default-title,#_default_ .default-text,#_default_ .default-description{display:inline}#_default_ .default-title{position:relative;font-weight:600;display:none}#_default_ a:before{position:relative;top:0;padding:5px;color:#a0aabf;content:"Ad";text-transform:uppercase;font-size:8px;font-family:Verdana,sans-serif}#_default_{display:block;float:left;max-width:38%;word-wrap:break-word}#_default_ ._default_{display:block;font-size:.75rem;height:51px;letter-spacing:1px;line-height:1rem;padding:18px 24px}body{max-width:1024px;margin:0 auto;overflow:auto;padding:2%}.split{overflow:scroll;padding:0!important;-webkit-overflow-scrolling:touch}.split-editor{padding-left:0;padding-right:0;position:relative;z-index:3}.show-preview .split-editor{display:none}.split-preview{background-color:#fff;display:none;top:0;position:relative;z-index:4}.show-preview .split-preview{display:block}#editor{font-size:1rem;font-family:"Ubuntu Mono",Monaco;font-weight:400;line-height:2rem;width:100%;height:100%}#editor .ace_gutter{-webkit-font-smoothing:antialiased}.editor-header{width:50%;float:left;border-bottom:1px solid #E8E8E8;position:relative}.editor-header--first{border-right:1px solid #E8E8E8}.editor-header .title{display:inline-block}.preview-html{padding:15px}.preview-html a{color:#A0AABF;text-decoration:underline}.preview-src{white-space:normal}.preview-mode-toggle-src{background-image:url("../img/icons/code.svg")}.preview-mode-toggle-src,.preview-mode-toggle-html{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0;background-repeat:no-repeat;width:32px;height:32px;display:block;position:absolute;right:.5rem;top:.5rem;display:none}.preview-mode-toggle-html{background-image:url("../img/icons/eye.svg")}.sr-only{visibility:hidden;text-overflow:110%;overflow:hidden;top:-100px;position:absolute}.mnone{margin:0!important}@media screen and (min-width:27.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--m1of1{width:100%}.g-b--m1of2,.g-b--m2of4,.g-b--m3of6,.g-b--m4of8,.g-b--m5of10,.g-b--m6of12{width:50%}.g-b--m1of3,.g-b--m2of6,.g-b--m4of12{width:33.333%}.g-b--m2of3,.g-b--m4of6,.g-b--m8of12{width:66.666%}.g-b--m1of4,.g-b--m2of8,.g-b--m3of12{width:25%}.g-b--m3of4,.g-b--m6of8,.g-b--m9of12{width:75%}.g-b--m1of5,.g-b--m2of10{width:20%}.g-b--m2of5,.g-b--m4of10{width:40%}.g-b--m3of5,.g-b--m6of10{width:60%}.g-b--m4of5,.g-b--m8of10{width:80%}.g-b--m1of6,.g-b--m2of12{width:16.666%}.g-b--m5of6,.g-b--m10of12{width:83.333%}.g-b--m1of8{width:12.5%}.g-b--m3of8{width:37.5%}.g-b--m5of8{width:62.5%}.g-b--m7of8{width:87.5%}.g-b--m1of10{width:10%}.g-b--m3of10{width:30%}.g-b--m7of10{width:70%}.g-b--m9of10{width:90%}.g-b--m1of12{width:8.333%}.g-b--m5of12{width:41.666%}.g-b--m7of12{width:58.333%}.g-b--m11of12{width:91.666%}.g-b--push--m1of1{margin-left:100%}.g-b--push--m1of2,.g-b--push--m2of4,.g-b--push--m3of6,.g-b--push--m4of8,.g-b--push--m5of10,.g-b--push--m6of12{margin-left:50%}.g-b--push--m1of3,.g-b--push--m2of6,.g-b--push--m4of12{margin-left:33.333%}.g-b--push--m2of3,.g-b--push--m4of6,.g-b--push--m8of12{margin-left:66.666%}.g-b--push--m1of4,.g-b--push--m2of8,.g-b--push--m3of12{margin-left:25%}.g-b--push--m3of4,.g-b--push--m6of8,.g-b--push--m9of12{margin-left:75%}.g-b--push--m1of5,.g-b--push--m2of10{margin-left:20%}.g-b--push--m2of5,.g-b--push--m4of10{margin-left:40%}.g-b--push--m3of5,.g-b--push--m6of10{margin-left:60%}.g-b--push--m4of5,.g-b--push--m8of10{margin-left:80%}.g-b--push--m1of6,.g-b--push--m2of12{margin-left:16.666%}.g-b--push--m5of6,.g-b--push--m10of12{margin-left:83.333%}.g-b--push--m1of8{margin-left:12.5%}.g-b--push--m3of8{margin-left:37.5%}.g-b--push--m5of8{margin-left:62.5%}.g-b--push--m7of8{margin-left:87.5%}.g-b--push--m1of10{margin-left:10%}.g-b--push--m3of10{margin-left:30%}.g-b--push--m7of10{margin-left:70%}.g-b--push--m9of10{margin-left:90%}.g-b--push--m1of12{margin-left:8.333%}.g-b--push--m5of12{margin-left:41.666%}.g-b--push--m7of12{margin-left:58.333%}.g-b--push--m11of12{margin-left:91.666%}.g-b--pull--m1of1{margin-right:100%}.g-b--pull--m1of2,.g-b--pull--m2of4,.g-b--pull--m3of6,.g-b--pull--m4of8,.g-b--pull--m5of10,.g-b--pull--m6of12{margin-right:50%}.g-b--pull--m1of3,.g-b--pull--m2of6,.g-b--pull--m4of12{margin-right:33.333%}.g-b--pull--m2of3,.g-b--pull--m4of6,.g-b--pull--m8of12{margin-right:66.666%}.g-b--pull--m1of4,.g-b--pull--m2of8,.g-b--pull--m3of12{margin-right:25%}.g-b--pull--m3of4,.g-b--pull--m6of8,.g-b--pull--m9of12{margin-right:75%}.g-b--pull--m1of5,.g-b--pull--m2of10{margin-right:20%}.g-b--pull--m2of5,.g-b--pull--m4of10{margin-right:40%}.g-b--pull--m3of5,.g-b--pull--m6of10{margin-right:60%}.g-b--pull--m4of5,.g-b--pull--m8of10{margin-right:80%}.g-b--pull--m1of6,.g-b--pull--m2of12{margin-right:16.666%}.g-b--pull--m5of6,.g-b--pull--m10of12{margin-right:83.333%}.g-b--pull--m1of8{margin-right:12.5%}.g-b--pull--m3of8{margin-right:37.5%}.g-b--pull--m5of8{margin-right:62.5%}.g-b--pull--m7of8{margin-right:87.5%}.g-b--pull--m1of10{margin-right:10%}.g-b--pull--m3of10{margin-right:30%}.g-b--pull--m7of10{margin-right:70%}.g-b--pull--m9of10{margin-right:90%}.g-b--pull--m1of12{margin-right:8.333%}.g-b--pull--m5of12{margin-right:41.666%}.g-b--pull--m7of12{margin-right:58.333%}.g-b--pull--m11of12{margin-right:91.666%}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{margin-bottom:.89999rem;padding-top:.10001rem}.title-document,.settings a{font-size:1.25rem}.words,.characters{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#zen{width:400px}#editor{font-size:1rem}}@media screen and (min-width:46.25em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--t1of1{width:100%}.g-b--t1of2,.g-b--t2of4,.g-b--t3of6,.g-b--t4of8,.g-b--t5of10,.g-b--t6of12{width:50%}.g-b--t1of3,.g-b--t2of6,.g-b--t4of12{width:33.333%}.g-b--t2of3,.g-b--t4of6,.g-b--t8of12{width:66.666%}.g-b--t1of4,.g-b--t2of8,.g-b--t3of12{width:25%}.g-b--t3of4,.g-b--t6of8,.g-b--t9of12{width:75%}.g-b--t1of5,.g-b--t2of10{width:20%}.g-b--t2of5,.g-b--t4of10{width:40%}.g-b--t3of5,.g-b--t6of10{width:60%}.g-b--t4of5,.g-b--t8of10{width:80%}.g-b--t1of6,.g-b--t2of12{width:16.666%}.g-b--t5of6,.g-b--t10of12{width:83.333%}.g-b--t1of8{width:12.5%}.g-b--t3of8{width:37.5%}.g-b--t5of8{width:62.5%}.g-b--t7of8{width:87.5%}.g-b--t1of10{width:10%}.g-b--t3of10{width:30%}.g-b--t7of10{width:70%}.g-b--t9of10{width:90%}.g-b--t1of12{width:8.333%}.g-b--t5of12{width:41.666%}.g-b--t7of12{width:58.333%}.g-b--t11of12{width:91.666%}.g-b--push--t1of1{margin-left:100%}.g-b--push--t1of2,.g-b--push--t2of4,.g-b--push--t3of6,.g-b--push--t4of8,.g-b--push--t5of10,.g-b--push--t6of12{margin-left:50%}.g-b--push--t1of3,.g-b--push--t2of6,.g-b--push--t4of12{margin-left:33.333%}.g-b--push--t2of3,.g-b--push--t4of6,.g-b--push--t8of12{margin-left:66.666%}.g-b--push--t1of4,.g-b--push--t2of8,.g-b--push--t3of12{margin-left:25%}.g-b--push--t3of4,.g-b--push--t6of8,.g-b--push--t9of12{margin-left:75%}.g-b--push--t1of5,.g-b--push--t2of10{margin-left:20%}.g-b--push--t2of5,.g-b--push--t4of10{margin-left:40%}.g-b--push--t3of5,.g-b--push--t6of10{margin-left:60%}.g-b--push--t4of5,.g-b--push--t8of10{margin-left:80%}.g-b--push--t1of6,.g-b--push--t2of12{margin-left:16.666%}.g-b--push--t5of6,.g-b--push--t10of12{margin-left:83.333%}.g-b--push--t1of8{margin-left:12.5%}.g-b--push--t3of8{margin-left:37.5%}.g-b--push--t5of8{margin-left:62.5%}.g-b--push--t7of8{margin-left:87.5%}.g-b--push--t1of10{margin-left:10%}.g-b--push--t3of10{margin-left:30%}.g-b--push--t7of10{margin-left:70%}.g-b--push--t9of10{margin-left:90%}.g-b--push--t1of12{margin-left:8.333%}.g-b--push--t5of12{margin-left:41.666%}.g-b--push--t7of12{margin-left:58.333%}.g-b--push--t11of12{margin-left:91.666%}.g-b--pull--t1of1{margin-right:100%}.g-b--pull--t1of2,.g-b--pull--t2of4,.g-b--pull--t3of6,.g-b--pull--t4of8,.g-b--pull--t5of10,.g-b--pull--t6of12{margin-right:50%}.g-b--pull--t1of3,.g-b--pull--t2of6,.g-b--pull--t4of12{margin-right:33.333%}.g-b--pull--t2of3,.g-b--pull--t4of6,.g-b--pull--t8of12{margin-right:66.666%}.g-b--pull--t1of4,.g-b--pull--t2of8,.g-b--pull--t3of12{margin-right:25%}.g-b--pull--t3of4,.g-b--pull--t6of8,.g-b--pull--t9of12{margin-right:75%}.g-b--pull--t1of5,.g-b--pull--t2of10{margin-right:20%}.g-b--pull--t2of5,.g-b--pull--t4of10{margin-right:40%}.g-b--pull--t3of5,.g-b--pull--t6of10{margin-right:60%}.g-b--pull--t4of5,.g-b--pull--t8of10{margin-right:80%}.g-b--pull--t1of6,.g-b--pull--t2of12{margin-right:16.666%}.g-b--pull--t5of6,.g-b--pull--t10of12{margin-right:83.333%}.g-b--pull--t1of8{margin-right:12.5%}.g-b--pull--t3of8{margin-right:37.5%}.g-b--pull--t5of8{margin-right:62.5%}.g-b--pull--t7of8{margin-right:87.5%}.g-b--pull--t1of10{margin-right:10%}.g-b--pull--t3of10{margin-right:30%}.g-b--pull--t7of10{margin-right:70%}.g-b--pull--t9of10{margin-right:90%}.g-b--pull--t1of12{margin-right:8.333%}.g-b--pull--t5of12{margin-right:41.666%}.g-b--pull--t7of12{margin-right:58.333%}.g-b--pull--t11of12{margin-right:91.666%}.splashscreen-dillinger{width:500px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem}.menu .menu-item--save-to,.menu .menu-item--import-from{display:block}.menu .menu-item--preview,.menu .menu-item--save-to.in-sidebar,.menu .menu-item--import-from.in-sidebar{display:none}.settings a{font-size:1.25rem}.words,.characters{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog{font-size:1.25rem}.enter-zen-mode{display:block}.close-zen-mode{right:3rem;top:3rem}#zen{font-size:1.25rem;width:500px}.split-editor{border-right:1px solid #E8E8E8;float:left;padding-right:16px;width:50%}.show-preview .split-editor{display:block}.split-preview{display:block;float:right;position:relative;top:0;width:50%}#editor{font-size:1rem}.preview-mode-toggle-src,.preview-mode-toggle-html{display:block}}@media screen and (min-width:62.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.g{margin-left:-16px;margin-right:-16px}.g-b{padding-left:16px;padding-right:16px}.g-b--d1of1{width:100%}.g-b--d1of2,.g-b--d2of4,.g-b--d3of6,.g-b--d4of8,.g-b--d5of10,.g-b--d6of12{width:50%}.g-b--d1of3,.g-b--d2of6,.g-b--d4of12{width:33.333%}.g-b--d2of3,.g-b--d4of6,.g-b--d8of12{width:66.666%}.g-b--d1of4,.g-b--d2of8,.g-b--d3of12{width:25%}.g-b--d3of4,.g-b--d6of8,.g-b--d9of12{width:75%}.g-b--d1of5,.g-b--d2of10{width:20%}.g-b--d2of5,.g-b--d4of10{width:40%}.g-b--d3of5,.g-b--d6of10{width:60%}.g-b--d4of5,.g-b--d8of10{width:80%}.g-b--d1of6,.g-b--d2of12{width:16.666%}.g-b--d5of6,.g-b--d10of12{width:83.333%}.g-b--d1of8{width:12.5%}.g-b--d3of8{width:37.5%}.g-b--d5of8{width:62.5%}.g-b--d7of8{width:87.5%}.g-b--d1of10{width:10%}.g-b--d3of10{width:30%}.g-b--d7of10{width:70%}.g-b--d9of10{width:90%}.g-b--d1of12{width:8.333%}.g-b--d5of12{width:41.666%}.g-b--d7of12{width:58.333%}.g-b--d11of12{width:91.666%}.g-b--push--d1of1{margin-left:100%}.g-b--push--d1of2,.g-b--push--d2of4,.g-b--push--d3of6,.g-b--push--d4of8,.g-b--push--d5of10,.g-b--push--d6of12{margin-left:50%}.g-b--push--d1of3,.g-b--push--d2of6,.g-b--push--d4of12{margin-left:33.333%}.g-b--push--d2of3,.g-b--push--d4of6,.g-b--push--d8of12{margin-left:66.666%}.g-b--push--d1of4,.g-b--push--d2of8,.g-b--push--d3of12{margin-left:25%}.g-b--push--d3of4,.g-b--push--d6of8,.g-b--push--d9of12{margin-left:75%}.g-b--push--d1of5,.g-b--push--d2of10{margin-left:20%}.g-b--push--d2of5,.g-b--push--d4of10{margin-left:40%}.g-b--push--d3of5,.g-b--push--d6of10{margin-left:60%}.g-b--push--d4of5,.g-b--push--d8of10{margin-left:80%}.g-b--push--d1of6,.g-b--push--d2of12{margin-left:16.666%}.g-b--push--d5of6,.g-b--push--d10of12{margin-left:83.333%}.g-b--push--d1of8{margin-left:12.5%}.g-b--push--d3of8{margin-left:37.5%}.g-b--push--d5of8{margin-left:62.5%}.g-b--push--d7of8{margin-left:87.5%}.g-b--push--d1of10{margin-left:10%}.g-b--push--d3of10{margin-left:30%}.g-b--push--d7of10{margin-left:70%}.g-b--push--d9of10{margin-left:90%}.g-b--push--d1of12{margin-left:8.333%}.g-b--push--d5of12{margin-left:41.666%}.g-b--push--d7of12{margin-left:58.333%}.g-b--push--d11of12{margin-left:91.666%}.g-b--pull--d1of1{margin-right:100%}.g-b--pull--d1of2,.g-b--pull--d2of4,.g-b--pull--d3of6,.g-b--pull--d4of8,.g-b--pull--d5of10,.g-b--pull--d6of12{margin-right:50%}.g-b--pull--d1of3,.g-b--pull--d2of6,.g-b--pull--d4of12{margin-right:33.333%}.g-b--pull--d2of3,.g-b--pull--d4of6,.g-b--pull--d8of12{margin-right:66.666%}.g-b--pull--d1of4,.g-b--pull--d2of8,.g-b--pull--d3of12{margin-right:25%}.g-b--pull--d3of4,.g-b--pull--d6of8,.g-b--pull--d9of12{margin-right:75%}.g-b--pull--d1of5,.g-b--pull--d2of10{margin-right:20%}.g-b--pull--d2of5,.g-b--pull--d4of10{margin-right:40%}.g-b--pull--d3of5,.g-b--pull--d6of10{margin-right:60%}.g-b--pull--d4of5,.g-b--pull--d8of10{margin-right:80%}.g-b--pull--d1of6,.g-b--pull--d2of12{margin-right:16.666%}.g-b--pull--d5of6,.g-b--pull--d10of12{margin-right:83.333%}.g-b--pull--d1of8{margin-right:12.5%}.g-b--pull--d3of8{margin-right:37.5%}.g-b--pull--d5of8{margin-right:62.5%}.g-b--pull--d7of8{margin-right:87.5%}.g-b--pull--d1of10{margin-right:10%}.g-b--pull--d3of10{margin-right:30%}.g-b--pull--d7of10{margin-right:70%}.g-b--pull--d9of10{margin-right:90%}.g-b--pull--d1of12{margin-right:8.333%}.g-b--pull--d5of12{margin-right:41.666%}.g-b--pull--d7of12{margin-right:58.333%}.g-b--pull--d11of12{margin-right:91.666%}.splashscreen-dillinger{width:700px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{font-size:1.25rem;margin-bottom:.89999rem;padding-top:.10001rem}.menu .menu-item--export-as{display:block}.menu .menu-item--preview{display:none}.settings a{font-size:1.25rem}.words,.characters{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#zen{width:700px}#editor{font-size:1rem}}@media screen and (min-width:87.5em){html{font-size:.875em}body{font-size:1rem}ul,ol{margin-bottom:.83999rem;padding-top:.16001rem}p{padding-top:.66001rem}p,pre{margin-bottom:1.33999rem}pre,blockquote p{font-size:1rem;padding-top:.66001rem}blockquote p{margin-bottom:.33999rem}h1{font-size:2.0571429rem;margin-bottom:.21999rem;padding-top:.78001rem}h2{font-size:1.953125rem;margin-bottom:.1835837rem;padding-top:.8164163rem}h3{font-size:1.6457143rem;margin-bottom:.07599rem;padding-top:.92401rem}h4{font-size:1.5625rem;margin-bottom:.546865rem;padding-top:.453135rem}h5{font-size:1.25rem;margin-bottom:-.56251rem;padding-top:.56251rem}h6{font-size:1rem;margin-bottom:-.65001rem;padding-top:.65001rem}.splashscreen-dillinger{width:800px}.splashscreen p{font-size:1.25rem;margin-bottom:1.43749rem;padding-top:.56251rem}.title{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.title-document{margin-bottom:.89999rem;padding-top:.10001rem}.title-document,.settings a{font-size:1.25rem}.words,.characters{font-size:.8rem;margin-bottom:.77999rem;padding-top:.22001rem}.modal--dillinger.about .modal-dialog,#zen{font-size:1.25rem}#editor{font-size:1rem}}@media (min-width:768px){.form-inline .form-group{display:inline-block;margin-bottom:0;vertical-align:middle}.form-inline .form-control{display:inline-block;width:auto;vertical-align:middle}.form-inline .input-group{display:inline-table;vertical-align:middle}.form-inline .input-group .input-group-addon,.form-inline .input-group .input-group-btn,.form-inline .input-group .form-control{width:auto}.form-inline .input-group>.form-control{width:100%}.form-inline .control-label{margin-bottom:0;vertical-align:middle}.form-inline .radio,.form-inline .checkbox{display:inline-block;margin-top:0;margin-bottom:0;vertical-align:middle}.form-inline .radio label,.form-inline .checkbox label{padding-left:0}.form-inline .radio input[type="radio"],.form-inline .checkbox input[type="checkbox"]{position:relative;margin-left:0}.form-inline .has-feedback .form-control-feedback{top:0}.form-horizontal .control-label{text-align:right;margin-bottom:0;padding-top:7px}.form-horizontal .form-group-lg .control-label{padding-top:14.3px}.form-horizontal .form-group-sm .control-label{padding-top:6px}.modal-dialog{width:600px;margin:30px auto}.modal-content{box-shadow:0 5px 15px rgba(0,0,0,.5)}.modal-sm{width:300px}}@media (min-width:992px){.modal-lg{width:900px}}@media screen and (max-width:1200px){#_default_{max-width:30%}#_default_ ._default_{font-size:.825rem;line-height:.875rem;padding:12px 12px 6px 24px;text-align:justify}}@media screen and (max-width:1100px){#_default_{max-width:27%}#_default_ ._default_{font-size:.8rem;line-height:.85rem;padding:12px 6px 6px 24px;text-align:justify}}@media screen and (max-width:1000px){#_default_{max-width:24%}#_default_ ._default_{font-size:.775rem;line-height:.8rem;padding:12px 6px 6px 24px;text-align:justify}}@media screen and (max-width:900px){#_default_{max-width:30%}}@media screen and (max-width:767px){.table-responsive{width:100%;margin-bottom:15px;overflow-y:hidden;overflow-x:auto;-ms-overflow-style:-ms-autohiding-scrollbar;border:1px solid #ddd;-webkit-overflow-scrolling:touch}.table-responsive>.table{margin-bottom:0}.table-responsive>.table>thead>tr>th,.table-responsive>.table>thead>tr>td,.table-responsive>.table>tbody>tr>th,.table-responsive>.table>tbody>tr>td,.table-responsive>.table>tfoot>tr>th,.table-responsive>.table>tfoot>tr>td{white-space:nowrap}.table-responsive>.table-bordered{border:0}.table-responsive>.table-bordered>thead>tr>th:first-child,.table-responsive>.table-bordered>thead>tr>td:first-child,.table-responsive>.table-bordered>tbody>tr>th:first-child,.table-responsive>.table-bordered>tbody>tr>td:first-child,.table-responsive>.table-bordered>tfoot>tr>th:first-child,.table-responsive>.table-bordered>tfoot>tr>td:first-child{border-left:0}.table-responsive>.table-bordered>thead>tr>th:last-child,.table-responsive>.table-bordered>thead>tr>td:last-child,.table-responsive>.table-bordered>tbody>tr>th:last-child,.table-responsive>.table-bordered>tbody>tr>td:last-child,.table-responsive>.table-bordered>tfoot>tr>th:last-child,.table-responsive>.table-bordered>tfoot>tr>td:last-child{border-right:0}.table-responsive>.table-bordered>tbody>tr:last-child>th,.table-responsive>.table-bordered>tbody>tr:last-child>td,.table-responsive>.table-bordered>tfoot>tr:last-child>th,.table-responsive>.table-bordered>tfoot>tr:last-child>td{border-bottom:0}}@media screen and (max-width:720px){#_default_{max-width:60%}#_default_ ._default_{font-size:.75rem;line-height:1rem;padding:12px 24px}}@media screen and (max-width:620px){#_default_{max-width:50%}#_default_ ._default_{font-size:.66rem;letter-spacing:1px;line-height:1rem;padding:10px 24px}}@media screen and (max-width:520px){#_default_ ._default_{font-size:.4rem;line-height:.875rem;padding:6px 12px 6px 24px;text-align:justify}}@media screen and (max-width:460px){#_default_{display:none}}@media screen and (max-width:46.1875em){.editor-header{display:none}.editor-header--first{display:block;width:100%}}</style></head><body id="preview">
+<h2 class="code-line" data-line-start=1 data-line-end=2 ><a id="1_Scenarios__Query_Examples_for_an_MCPcapable_LLM_Claude_etc_Using_the_Actus_Agent_MCP_Server_1"></a><strong>1. Scenarios / Query Examples for an MCP-capable LLM (Claude, etc.) Using the Actus Agent MCP Server</strong></h2>
+<p class="has-line-data" data-line-start="3" data-line-end="4">Your <strong>Actus MCP server</strong> presumably exposes:</p>
+<ul>
+<li class="has-line-data" data-line-start="5" data-line-end="6"><strong>Transcripts</strong> (e.g., speech-to-text from broadcast media)</li>
+<li class="has-line-data" data-line-start="6" data-line-end="8"><strong>Alerts</strong> (e.g., keyword detection, face recognition, anomalies)</li>
+</ul>
+<p class="has-line-data" data-line-start="8" data-line-end="9">Here are some <strong>realistic multi-turn query examples</strong> an LLM or agent might issue via MCP:</p>
+<h3 class="code-line" data-line-start=10 data-line-end=11 ><a id="A_Transcripts_10"></a><strong>A. Transcripts</strong></h3>
+<p class="has-line-data" data-line-start="12" data-line-end="14"><strong>Scenario:</strong> Journalist fact-checking a TV broadcast.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="15" data-line-end="16">“Retrieve the full transcript for channel ‘News24’ between 2025-08-01 18:00 and 18:30.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="19" data-line-end="21"><strong>Scenario:</strong> Analyst searching for a specific keyword in past broadcasts.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="22" data-line-end="23">“Search all transcripts from ‘SportsNet’ in the last 7 days for mentions of ‘Olympics’ and return the matching timecodes.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="26" data-line-end="28"><strong>Scenario:</strong> Creating a highlights reel.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="29" data-line-end="30">“Get all transcript segments from ‘Channel5’ on 2025-08-10 where ‘electric vehicle’ is mentioned, including the 30 seconds before and after each mention.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="33" data-line-end="35"><strong>Scenario:</strong> Investigating a political speech.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="36" data-line-end="37">“Summarize all statements made by the Prime Minister in channel ‘ParliamentLive’ yesterday.”</p>
+</blockquote>
+<hr>
+<h3 class="code-line" data-line-start=40 data-line-end=41 ><a id="B_Alerts_40"></a><strong>B. Alerts</strong></h3>
+<p class="has-line-data" data-line-start="42" data-line-end="44"><strong>Scenario:</strong> Security monitoring.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="45" data-line-end="46">“List all alerts triggered by ‘keyword: protest’ in the last 24 hours from monitored news channels.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="49" data-line-end="51"><strong>Scenario:</strong> Compliance check.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="52" data-line-end="53">“Retrieve alerts for ‘gambling-related ads’ on Channel7 for the past week, with timestamps and alert severity.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="56" data-line-end="58"><strong>Scenario:</strong> Event detection.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="59" data-line-end="60">“Show all alerts of type ‘Breaking News’ generated between 2025-08-10 and 2025-08-11.”</p>
+</blockquote>
+<hr>
+<p class="has-line-data" data-line-start="63" data-line-end="65"><strong>Scenario:</strong> Multi-channel incident correlation.<br>
+Query:</p>
+<blockquote>
+<p class="has-line-data" data-line-start="66" data-line-end="67">“Cross-reference all alerts about ‘train accident’ with transcripts from Channel3 and Channel9 on 2025-08-05.”</p>
+</blockquote>
+<hr>
+<h2 class="code-line" data-line-start=70 data-line-end=71 ><a id="2_Advantages_of_Using_Semantic_Kernel_to_Implement_the_Actus_MCP_Agent_70"></a><strong>2. Advantages of Using Semantic Kernel to Implement the Actus MCP Agent</strong></h2>
+<p class="has-line-data" data-line-start="72" data-line-end="73">Yes — <strong>Semantic Kernel (SK)</strong> could be a strong choice if you want:</p>
+<ul>
+<li class="has-line-data" data-line-start="74" data-line-end="75"><strong>Multi-skill orchestration</strong> — SK can manage your MCP agent as just one of several skills, blending Actus data with other API results.</li>
+<li class="has-line-data" data-line-start="75" data-line-end="76"><strong>Memory &amp; context handling</strong> — SK can store and recall past transcript results to improve multi-turn queries.</li>
+<li class="has-line-data" data-line-start="76" data-line-end="77"><strong>Planner integration</strong> — SK’s planning capabilities can break down high-level instructions into multiple MCP calls.</li>
+<li class="has-line-data" data-line-start="77" data-line-end="78"><strong>Cross-model compatibility</strong> — You can run OpenAI, Azure OpenAI, Anthropic, or local models without rewriting the MCP client logic.</li>
+<li class="has-line-data" data-line-start="78" data-line-end="80"><strong>Prompt chaining</strong> — SK can automatically use Actus output as input for further reasoning, summarizing, or alert correlation.</li>
+</ul>
+<p class="has-line-data" data-line-start="80" data-line-end="81">Without SK, you can still integrate your MCP agent, but you’d manually handle orchestration, state, and context passing.</p>
+<hr>
+<h2 class="code-line" data-line-start=84 data-line-end=85 ><a id="3_Example_Query_for_OpenAI_to_Invoke_the_Actus_MCP_Agent_84"></a><strong>3. Example Query for OpenAI to Invoke the Actus MCP Agent</strong></h2>
+<p class="has-line-data" data-line-start="86" data-line-end="87">If you’re using <strong>OpenAI’s function calling</strong> or <strong>MCP tool integration</strong>, the query might look like this:</p>
+<p class="has-line-data" data-line-start="88" data-line-end="89"><strong>User Prompt (natural language):</strong></p>
+<blockquote>
+<p class="has-line-data" data-line-start="90" data-line-end="91">“Find all transcript segments from channel ‘FinanceToday’ on August 1st, 2025, between 9:00 and 10:00 AM that mention ‘interest rates’, and summarize them.”</p>
+</blockquote>
+<p class="has-line-data" data-line-start="92" data-line-end="93"><strong>OpenAI Function Call (auto-generated or manual) to your MCP agent:</strong></p>
+<pre><code class="has-line-data" data-line-start="95" data-line-end="106" class="language-json">{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_transcripts"</span></span>,
+  "<span class="hljs-attribute">arguments</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">channel</span>": <span class="hljs-value"><span class="hljs-string">"FinanceToday"</span></span>,
+    "<span class="hljs-attribute">start_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-01T09:00:00Z"</span></span>,
+    "<span class="hljs-attribute">end_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-01T10:00:00Z"</span></span>,
+    "<span class="hljs-attribute">keywords</span>": <span class="hljs-value">[<span class="hljs-string">"interest rates"</span>]</span>,
+    "<span class="hljs-attribute">summary</span>": <span class="hljs-value"><span class="hljs-literal">true</span>
+  </span>}
+</span>}
+</code></pre>
+<p class="has-line-data" data-line-start="107" data-line-end="108">Your <strong>Actus MCP server</strong> would:</p>
+<ol>
+<li class="has-line-data" data-line-start="109" data-line-end="110">Search transcripts.</li>
+<li class="has-line-data" data-line-start="110" data-line-end="111">Return matching text + metadata.</li>
+<li class="has-line-data" data-line-start="111" data-line-end="113">(Optional) Summarize before returning if the <code>summary</code> flag is true.</li>
+</ol>
+<hr>
+<p class="has-line-data" data-line-start="115" data-line-end="116">If you want, I can also draft <strong>a fully working MCP schema</strong> for the Actus agent with example <code>tools</code> and parameters so Claude/OpenAI can auto-discover it and send exactly the right JSON. That way, LLMs wouldn’t need prompt tricks — they’d call the API directly.</p>
+<p class="has-line-data" data-line-start="117" data-line-end="118">Do you want me to prepare that MCP schema for Actus? That would make the query examples above directly executable.</p>
+<p class="has-line-data" data-line-start="119" data-line-end="120">Got it — I’ll prepare you a <strong>fully working MCP schema</strong> for the <strong>Actus Agent</strong> so any MCP-capable LLM (Claude, OpenAI, etc.) can discover and call your transcripts and alerts endpoints without needing prompt engineering.</p>
+<p class="has-line-data" data-line-start="121" data-line-end="122">I’ll give you:</p>
+<ol>
+<li class="has-line-data" data-line-start="123" data-line-end="124"><strong>MCP tool schema</strong> (JSON) with methods for transcripts and alerts</li>
+<li class="has-line-data" data-line-start="124" data-line-end="125"><strong>Example MCP manifest</strong></li>
+<li class="has-line-data" data-line-start="125" data-line-end="127"><strong>Example OpenAI/Claude usage</strong></li>
+</ol>
+<hr>
+<h2 class="code-line" data-line-start=129 data-line-end=130 ><a id="1_MCP_Tool_Schema_for_Actus_Agent_129"></a><strong>1. MCP Tool Schema for Actus Agent</strong></h2>
+<pre><code class="has-line-data" data-line-start="132" data-line-end="198" class="language-json">{
+  "<span class="hljs-attribute">tools</span>": <span class="hljs-value">[
+    {
+      "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_transcripts"</span></span>,
+      "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Retrieve transcript segments from Actus based on channel, time range, and optional keyword search."</span></span>,
+      "<span class="hljs-attribute">parameters</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+        "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+          "<span class="hljs-attribute">channel</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The name or ID of the channel to retrieve transcripts from."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">start_time</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The start time (ISO 8601 UTC) for transcript retrieval."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">end_time</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The end time (ISO 8601 UTC) for transcript retrieval."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">keywords</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"array"</span></span>,
+            "<span class="hljs-attribute">items</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span> </span>}</span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Optional keywords to filter transcript segments."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">summary</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"boolean"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"If true, return a summarized version of matching transcripts."</span>
+          </span>}
+        </span>}</span>,
+        "<span class="hljs-attribute">required</span>": <span class="hljs-value">[<span class="hljs-string">"channel"</span>, <span class="hljs-string">"start_time"</span>, <span class="hljs-string">"end_time"</span>]
+      </span>}
+    </span>},
+    {
+      "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_alerts"</span></span>,
+      "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Retrieve alerts from Actus based on type, channel, and time range."</span></span>,
+      "<span class="hljs-attribute">parameters</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+        "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+          "<span class="hljs-attribute">alert_type</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The type of alert (e.g., keyword, breaking_news, compliance)."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">channel</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Optional channel to filter alerts."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">start_time</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The start time (ISO 8601 UTC) for alert retrieval."</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">end_time</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+            "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span></span>,
+            "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"The end time (ISO 8601 UTC) for alert retrieval."</span>
+          </span>}
+        </span>}</span>,
+        "<span class="hljs-attribute">required</span>": <span class="hljs-value">[<span class="hljs-string">"alert_type"</span>, <span class="hljs-string">"start_time"</span>, <span class="hljs-string">"end_time"</span>]
+      </span>}
+    </span>}
+  ]
+</span>}
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=201 data-line-end=202 ><a id="2_MCP_Manifest_Example_201"></a><strong>2. MCP Manifest Example</strong></h2>
+<p class="has-line-data" data-line-start="203" data-line-end="204">This is the manifest that you’d expose so LLMs can discover your Actus MCP server.</p>
+<pre><code class="has-line-data" data-line-start="206" data-line-end="222" class="language-json">{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"Actus MCP Server"</span></span>,
+  "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Provides access to Actus broadcast transcripts and alerts via MCP tools."</span></span>,
+  "<span class="hljs-attribute">tools_schema</span>": <span class="hljs-value"><span class="hljs-string">"https://your-server.com/mcp-tools-schema.json"</span></span>,
+  "<span class="hljs-attribute">contact_email</span>": <span class="hljs-value"><span class="hljs-string">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8bf8fefbfbe4f9ffcbeae8fffef8a5fffd">[email&#160;protected]</a>"</span></span>,
+  "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0"</span></span>,
+  "<span class="hljs-attribute">capabilities</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">transcripts</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+    "<span class="hljs-attribute">alerts</span>": <span class="hljs-value"><span class="hljs-literal">true</span>
+  </span>}</span>,
+  "<span class="hljs-attribute">auth</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"bearer"</span></span>,
+    "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"API key for accessing Actus MCP server"</span>
+  </span>}
+</span>}
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=225 data-line-end=226 ><a id="3_Example_Usage__OpenAI_Calls_Actus_MCP_225"></a><strong>3. Example Usage — OpenAI Calls Actus MCP</strong></h2>
+<h3 class="code-line" data-line-start=227 data-line-end=228 ><a id="Natural_Language_Prompt_227"></a><strong>Natural Language Prompt</strong></h3>
+<blockquote>
+<p class="has-line-data" data-line-start="229" data-line-end="230">“Get all transcript segments from FinanceToday on August 1st 2025 between 9 and 10 AM mentioning ‘interest rates’ and summarize them.”</p>
+</blockquote>
+<h3 class="code-line" data-line-start=231 data-line-end=232 ><a id="OpenAI_Automatically_Generates_Function_Call_231"></a><strong>OpenAI Automatically Generates Function Call</strong></h3>
+<pre><code class="has-line-data" data-line-start="234" data-line-end="245" class="language-json">{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_transcripts"</span></span>,
+  "<span class="hljs-attribute">arguments</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">channel</span>": <span class="hljs-value"><span class="hljs-string">"FinanceToday"</span></span>,
+    "<span class="hljs-attribute">start_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-01T09:00:00Z"</span></span>,
+    "<span class="hljs-attribute">end_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-01T10:00:00Z"</span></span>,
+    "<span class="hljs-attribute">keywords</span>": <span class="hljs-value">[<span class="hljs-string">"interest rates"</span>]</span>,
+    "<span class="hljs-attribute">summary</span>": <span class="hljs-value"><span class="hljs-literal">true</span>
+  </span>}
+</span>}
+</code></pre>
+<hr>
+<h3 class="code-line" data-line-start=248 data-line-end=249 ><a id="Natural_Language_Prompt_248"></a><strong>Natural Language Prompt</strong></h3>
+<blockquote>
+<p class="has-line-data" data-line-start="250" data-line-end="251">“List all breaking news alerts from Channel7 in the last week.”</p>
+</blockquote>
+<h3 class="code-line" data-line-start=252 data-line-end=253 ><a id="OpenAI_Function_Call_252"></a><strong>OpenAI Function Call</strong></h3>
+<pre><code class="has-line-data" data-line-start="255" data-line-end="265" class="language-json">{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_alerts"</span></span>,
+  "<span class="hljs-attribute">arguments</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">alert_type</span>": <span class="hljs-value"><span class="hljs-string">"breaking_news"</span></span>,
+    "<span class="hljs-attribute">channel</span>": <span class="hljs-value"><span class="hljs-string">"Channel7"</span></span>,
+    "<span class="hljs-attribute">start_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-06T00:00:00Z"</span></span>,
+    "<span class="hljs-attribute">end_time</span>": <span class="hljs-value"><span class="hljs-string">"2025-08-13T00:00:00Z"</span>
+  </span>}
+</span>}
+</code></pre>
+<hr>
+<p class="has-line-data" data-line-start="268" data-line-end="269">With this schema:</p>
+<ul>
+<li class="has-line-data" data-line-start="270" data-line-end="271"><strong>Claude</strong> will auto-discover <code>actus_get_transcripts</code> and <code>actus_get_alerts</code> as available tools.</li>
+<li class="has-line-data" data-line-start="271" data-line-end="272"><strong>OpenAI</strong> can be configured with <code>functions</code> to match this schema exactly.</li>
+<li class="has-line-data" data-line-start="272" data-line-end="274">Your server only needs to respond with JSON results — the LLM handles summarization, correlation, etc.</li>
+</ul>
+<hr>
+<p class="has-line-data" data-line-start="276" data-line-end="277">If you want, I can now give you <strong>the Node.js MCP server code</strong> that implements these two endpoints and serves the manifest + schema so Claude or OpenAI can connect immediately. That way, you’d have a working Actus MCP server ready for real queries.</p>
+<p class="has-line-data" data-line-start="278" data-line-end="279">Do you want me to prepare that server code next?</p>
+<p class="has-line-data" data-line-start="280" data-line-end="281">Alright, Gil — let’s go through this carefully so you get:</p>
+<ol>
+<li class="has-line-data" data-line-start="282" data-line-end="283"><strong>A ready-to-run Node.js MCP server</strong> for Actus</li>
+<li class="has-line-data" data-line-start="283" data-line-end="284"><strong>A clear explanation of what OpenAI means by “functions”</strong> and how they relate to MCP</li>
+<li class="has-line-data" data-line-start="284" data-line-end="286"><strong>A deployment &amp; security checklist</strong> so you can expose Actus MCP to ChatGPT / Claude safely</li>
+</ol>
+<hr>
+<h2 class="code-line" data-line-start=288 data-line-end=289 ><a id="1_Nodejs_MCP_Server_Code_for_Actus_288"></a><strong>1. Node.js MCP Server Code for Actus</strong></h2>
+<p class="has-line-data" data-line-start="290" data-line-end="291">Here’s a minimal MCP server using <strong>Express</strong> that implements the <code>actus_get_transcripts</code> and <code>actus_get_alerts</code> tools we discussed.</p>
+<pre><code class="has-line-data" data-line-start="293" data-line-end="395" class="language-javascript"><span class="hljs-comment">// actus-mcp-server.js</span>
+<span class="hljs-keyword">import</span> express <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> bodyParser <span class="hljs-keyword">from</span> <span class="hljs-string">'body-parser'</span>;
+
+<span class="hljs-comment">// ======== CONFIG ========</span>
+<span class="hljs-keyword">const</span> API_KEY = process.env.ACTUS_API_KEY || <span class="hljs-string">'my-secret-key'</span>;
+<span class="hljs-keyword">const</span> PORT = process.env.PORT || <span class="hljs-number">3000</span>;
+
+<span class="hljs-comment">// ======== EXPRESS SETUP ========</span>
+<span class="hljs-keyword">const</span> app = express();
+app.use(bodyParser.json());
+
+<span class="hljs-comment">// ======== MCP Tools Schema Endpoint ========</span>
+app.get(<span class="hljs-string">'/mcp-tools-schema.json'</span>, (req, res) =&gt; {
+  res.json({
+    tools: [
+      {
+        name: <span class="hljs-string">"actus_get_transcripts"</span>,
+        description: <span class="hljs-string">"Retrieve transcript segments from Actus based on channel, time range, and optional keyword search."</span>,
+        parameters: {
+          type: <span class="hljs-string">"object"</span>,
+          properties: {
+            channel: { type: <span class="hljs-string">"string"</span> },
+            start_time: { type: <span class="hljs-string">"string"</span>, format: <span class="hljs-string">"date-time"</span> },
+            end_time: { type: <span class="hljs-string">"string"</span>, format: <span class="hljs-string">"date-time"</span> },
+            keywords: { type: <span class="hljs-string">"array"</span>, items: { type: <span class="hljs-string">"string"</span> } },
+            summary: { type: <span class="hljs-string">"boolean"</span> }
+          },
+          required: [<span class="hljs-string">"channel"</span>, <span class="hljs-string">"start_time"</span>, <span class="hljs-string">"end_time"</span>]
+        }
+      },
+      {
+        name: <span class="hljs-string">"actus_get_alerts"</span>,
+        description: <span class="hljs-string">"Retrieve alerts from Actus based on type, channel, and time range."</span>,
+        parameters: {
+          type: <span class="hljs-string">"object"</span>,
+          properties: {
+            alert_type: { type: <span class="hljs-string">"string"</span> },
+            channel: { type: <span class="hljs-string">"string"</span> },
+            start_time: { type: <span class="hljs-string">"string"</span>, format: <span class="hljs-string">"date-time"</span> },
+            end_time: { type: <span class="hljs-string">"string"</span>, format: <span class="hljs-string">"date-time"</span> }
+          },
+          required: [<span class="hljs-string">"alert_type"</span>, <span class="hljs-string">"start_time"</span>, <span class="hljs-string">"end_time"</span>]
+        }
+      }
+    ]
+  });
+});
+
+<span class="hljs-comment">// ======== Authentication Middleware ========</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkAuth</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  <span class="hljs-keyword">const</span> authHeader = req.headers.authorization;
+  <span class="hljs-keyword">if</span> (!authHeader || authHeader !== <span class="hljs-string">`Bearer <span class="hljs-subst">${API_KEY}</span>`</span>) {
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">401</span>).json({ error: <span class="hljs-string">'Unauthorized'</span> });
+  }
+  next();
+}
+
+<span class="hljs-comment">// ======== Tool Implementations ========</span>
+app.post(<span class="hljs-string">'/actus_get_transcripts'</span>, checkAuth, <span class="hljs-keyword">async</span> (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> { channel, start_time, end_time, keywords, summary } = req.body;
+
+  <span class="hljs-comment">// <span class="hljs-doctag">TODO:</span> Replace with your actual Actus DB/API query</span>
+  <span class="hljs-keyword">const</span> fakeResults = [
+    { time: <span class="hljs-string">"2025-08-01T09:05:00Z"</span>, text: <span class="hljs-string">"Interest rates will remain stable."</span> }
+  ];
+
+  <span class="hljs-keyword">if</span> (summary) {
+    <span class="hljs-keyword">return</span> res.json({ summary: <span class="hljs-string">"Mentioned that interest rates will remain stable."</span> });
+  }
+  res.json(fakeResults);
+});
+
+app.post(<span class="hljs-string">'/actus_get_alerts'</span>, checkAuth, <span class="hljs-keyword">async</span> (req, res) =&gt; {
+  <span class="hljs-keyword">const</span> { alert_type, channel, start_time, end_time } = req.body;
+
+  <span class="hljs-comment">// <span class="hljs-doctag">TODO:</span> Replace with actual Actus DB/API query</span>
+  <span class="hljs-keyword">const</span> fakeAlerts = [
+    { time: <span class="hljs-string">"2025-08-10T12:00:00Z"</span>, alert_type, channel, description: <span class="hljs-string">"Breaking news: market crash"</span> }
+  ];
+
+  res.json(fakeAlerts);
+});
+
+<span class="hljs-comment">// ======== Manifest Endpoint ========</span>
+app.get(<span class="hljs-string">'/mcp-manifest.json'</span>, (req, res) =&gt; {
+  res.json({
+    name: <span class="hljs-string">"Actus MCP Server"</span>,
+    description: <span class="hljs-string">"Provides access to Actus broadcast transcripts and alerts via MCP tools."</span>,
+    tools_schema: <span class="hljs-string">`https://<span class="hljs-subst">${req.hostname}</span>/mcp-tools-schema.json`</span>,
+    contact_email: <span class="hljs-string">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c5b6b0b5b5aab7b185a4a6b1b0b6ebb1b3">[email&#160;protected]</a>"</span>,
+    version: <span class="hljs-string">"1.0.0"</span>,
+    capabilities: { transcripts: <span class="hljs-literal">true</span>, alerts: <span class="hljs-literal">true</span> },
+    auth: { type: <span class="hljs-string">"bearer"</span>, description: <span class="hljs-string">"API key for accessing Actus MCP server"</span> }
+  });
+});
+
+<span class="hljs-comment">// ======== Start Server ========</span>
+app.listen(PORT, () =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Actus MCP server running on port <span class="hljs-subst">${PORT}</span>`</span>);
+});
+</code></pre>
+<p class="has-line-data" data-line-start="396" data-line-end="397"><strong>Run it:</strong></p>
+<pre><code class="has-line-data" data-line-start="399" data-line-end="403" class="language-bash">npm install express body-parser
+<span class="hljs-built_in">export</span> ACTUS_API_KEY=<span class="hljs-string">"super-secret"</span>
+node actus-mcp-server.js
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=406 data-line-end=407 ><a id="2_What_OpenAI_Means_by_Functions_406"></a><strong>2. What OpenAI Means by “Functions”</strong></h2>
+<p class="has-line-data" data-line-start="408" data-line-end="409">When OpenAI talks about <strong>functions</strong> (or “function calling”), they mean:</p>
+<ul>
+<li class="has-line-data" data-line-start="410" data-line-end="411">A JSON schema describing an <strong>action</strong> the model can take.</li>
+<li class="has-line-data" data-line-start="411" data-line-end="412">When ChatGPT sees a user request matching that schema, it <strong>calls the function</strong> instead of just generating text.</li>
+<li class="has-line-data" data-line-start="412" data-line-end="414">The MCP “tools” are basically <strong>functions</strong> in OpenAI terminology — same concept, different name.</li>
+</ul>
+<p class="has-line-data" data-line-start="414" data-line-end="415">Example OpenAI function definition for <code>actus_get_transcripts</code>:</p>
+<pre><code class="has-line-data" data-line-start="417" data-line-end="433" class="language-json">{
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"actus_get_transcripts"</span></span>,
+  "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Retrieve transcript segments from Actus"</span></span>,
+  "<span class="hljs-attribute">parameters</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+    "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">channel</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span> </span>}</span>,
+      "<span class="hljs-attribute">start_time</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>, "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span> </span>}</span>,
+      "<span class="hljs-attribute">end_time</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>, "<span class="hljs-attribute">format</span>": <span class="hljs-value"><span class="hljs-string">"date-time"</span> </span>}</span>,
+      "<span class="hljs-attribute">keywords</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"array"</span></span>, "<span class="hljs-attribute">items</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span> </span>} </span>}</span>,
+      "<span class="hljs-attribute">summary</span>": <span class="hljs-value">{ "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"boolean"</span> </span>}
+    </span>}</span>,
+    "<span class="hljs-attribute">required</span>": <span class="hljs-value">[<span class="hljs-string">"channel"</span>, <span class="hljs-string">"start_time"</span>, <span class="hljs-string">"end_time"</span>]
+  </span>}
+</span>}
+</code></pre>
+<p class="has-line-data" data-line-start="434" data-line-end="435">So in short: <strong>Functions = MCP Tools</strong> in your case.</p>
+<hr>
+<h2 class="code-line" data-line-start=438 data-line-end=439 ><a id="3_Checklist_for_Exposing_Actus_MCP_to_ChatGPT__Claude_438"></a><strong>3. Checklist for Exposing Actus MCP to ChatGPT / Claude</strong></h2>
+<h3 class="code-line" data-line-start=440 data-line-end=441 ><a id="Infrastructure_440"></a><strong>Infrastructure</strong></h3>
+<ul>
+<li class="has-line-data" data-line-start="442" data-line-end="443">✅ Host your MCP server on a <strong>publicly accessible web server</strong> (AWS, Azure, GCP, etc.).</li>
+<li class="has-line-data" data-line-start="443" data-line-end="444">✅ Use <strong>HTTPS</strong> — Claude and ChatGPT require TLS.</li>
+<li class="has-line-data" data-line-start="444" data-line-end="446">✅ Use a <strong>stable domain name</strong> (e.g., <code>mcp.actus.tv</code>).</li>
+</ul>
+<h3 class="code-line" data-line-start=446 data-line-end=447 ><a id="Security_446"></a><strong>Security</strong></h3>
+<ul>
+<li class="has-line-data" data-line-start="448" data-line-end="449">✅ Use <strong>Bearer token auth</strong> (like in the example code).</li>
+<li class="has-line-data" data-line-start="449" data-line-end="450">✅ Store API keys <strong>only on the MCP server</strong> — never in the LLM prompt.</li>
+<li class="has-line-data" data-line-start="450" data-line-end="451">✅ Rotate keys periodically.</li>
+<li class="has-line-data" data-line-start="451" data-line-end="453">✅ Optionally restrict by IP if you know where requests will come from.</li>
+</ul>
+<h3 class="code-line" data-line-start=453 data-line-end=454 ><a id="MCP_Manifest_453"></a><strong>MCP Manifest</strong></h3>
+<ul>
+<li class="has-line-data" data-line-start="455" data-line-end="456">✅ Make <code>/mcp-manifest.json</code> public — LLMs use it to discover your tools.</li>
+<li class="has-line-data" data-line-start="456" data-line-end="458">✅ The <code>tools_schema</code> URL must also be public.</li>
+</ul>
+<h3 class="code-line" data-line-start=458 data-line-end=459 ><a id="For_ChatGPT_458"></a><strong>For ChatGPT</strong></h3>
+<ul>
+<li class="has-line-data" data-line-start="460" data-line-end="461">You’ll <strong>register your MCP server</strong> with ChatGPT by providing the manifest URL.</li>
+<li class="has-line-data" data-line-start="461" data-line-end="463">No extra code changes — ChatGPT reads the manifest, discovers the tools, and can call them as functions.</li>
+</ul>
+<h3 class="code-line" data-line-start=463 data-line-end=464 ><a id="For_Claude_463"></a><strong>For Claude</strong></h3>
+<ul>
+<li class="has-line-data" data-line-start="465" data-line-end="466">Same process — in Anthropic’s MCP config, add your manifest URL.</li>
+<li class="has-line-data" data-line-start="466" data-line-end="468">Claude fetches the manifest &amp; schema, then calls the tools directly.</li>
+</ul>
+<hr>
+<p class="has-line-data" data-line-start="470" data-line-end="473">If you want, I can next give you a <strong>diagram</strong> showing the full request flow:<br>
+User → LLM (Claude/OpenAI) → MCP → Actus API → MCP → LLM → User.<br>
+It makes the security and integration story crystal clear.</p>
+<p class="has-line-data" data-line-start="474" data-line-end="476">Do you want me to prepare that flow diagram?<br>
+Alright — let’s go step by step and make this absolutely clear so there’s no confusion.</p>
+<hr>
+<h2 class="code-line" data-line-start=479 data-line-end=480 ><a id="1_Full_Flow_Diagram_479"></a><strong>1. Full Flow Diagram</strong></h2>
+<pre><code class="has-line-data" data-line-start="482" data-line-end="505"> ┌──────────┐      User Prompt        ┌──────────────┐    MCP Tool Call      ┌──────────────┐
+ │   User   │  ───────────────────▶  │   LLM (GPT)   │  ───────────────────▶ │ Actus MCP    │
+ └──────────┘                         │  or Claude   │                        │  Server      │
+                                      └─────┬────────┘                        └─────┬────────┘
+                                            │                                       │
+                                            │  HTTPS (Bearer API Key)               │
+                                            ▼                                       ▼
+                                      ┌──────────────┐                        ┌──────────────┐
+                                      │ MCP Manifest │                        │ Local Actus  │
+                                      │ + Schema     │                        │ API / Mongo  │
+                                      └──────────────┘                        └──────────────┘
+                                                                                      │
+                                                                                      ▼
+                                                                                 Returns JSON
+                                                                                      │
+                                            ┌────────────────────────────────────────┘
+                                            │
+                                     Returns Data + Summary
+                                            │
+ ┌──────────┐                              ▼
+ │   User   │  ◀────────────────────────────────────────
+ └──────────┘
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=508 data-line-end=509 ><a id="2_How_the_LLM_Gets_the_API_Key_508"></a><strong>2. How the LLM Gets the API Key</strong></h2>
+<p class="has-line-data" data-line-start="510" data-line-end="511">The LLM <strong>itself does not “store” the key</strong> — the <strong>MCP client</strong> (the environment where the LLM is running) does.</p>
+<p class="has-line-data" data-line-start="512" data-line-end="513"><strong>For example:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="514" data-line-end="518">
+<p class="has-line-data" data-line-start="514" data-line-end="515">In ChatGPT Enterprise (with MCP support), you <strong>register your MCP server</strong> in the settings and paste in:</p>
+<ul>
+<li class="has-line-data" data-line-start="516" data-line-end="517">The <strong>Manifest URL</strong> (<code>https://mcp.actus.tv/mcp-manifest.json</code>)</li>
+<li class="has-line-data" data-line-start="517" data-line-end="518">The <strong>API Key</strong> (<code>Bearer xxxxxxxx</code>)</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="518" data-line-end="519">
+<p class="has-line-data" data-line-start="518" data-line-end="519">The MCP client stores the key <strong>locally</strong> and attaches it to every HTTPS call it makes to your server.</p>
+</li>
+<li class="has-line-data" data-line-start="519" data-line-end="521">
+<p class="has-line-data" data-line-start="519" data-line-end="520">The model never sees the raw key unless you explicitly return it in your tool responses (which you should never do).</p>
+</li>
+</ul>
+<p class="has-line-data" data-line-start="521" data-line-end="522">So: <strong>You give the API key once during MCP server registration</strong> in the LLM client.</p>
+<hr>
+<h2 class="code-line" data-line-start=525 data-line-end=526 ><a id="3_Rotating_Keys_Periodically_525"></a><strong>3. Rotating Keys Periodically</strong></h2>
+<p class="has-line-data" data-line-start="527" data-line-end="529">Yes — I mean <strong>your API key</strong>.<br>
+You might want to rotate every 30–90 days for security.</p>
+<p class="has-line-data" data-line-start="530" data-line-end="531"><strong>How rotation works:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="532" data-line-end="533">You generate a new key on your server.</li>
+<li class="has-line-data" data-line-start="533" data-line-end="534">You update the MCP client configuration (ChatGPT/Claude) with the new key.</li>
+<li class="has-line-data" data-line-start="534" data-line-end="536">Old keys stop working after a grace period.</li>
+</ul>
+<p class="has-line-data" data-line-start="536" data-line-end="537">There’s no “automatic” key update — you manually update it wherever the MCP client is configured.</p>
+<hr>
+<h2 class="code-line" data-line-start=540 data-line-end=541 ><a id="4_Where_to_Store_mcpmanifestjson_540"></a><strong>4. Where to Store <code>/mcp-manifest.json</code></strong></h2>
+<ul>
+<li class="has-line-data" data-line-start="542" data-line-end="543">
+<p class="has-line-data" data-line-start="542" data-line-end="543">Yes — store it <strong>on the same public IP/web server</strong> as your MCP API endpoints.</p>
+</li>
+<li class="has-line-data" data-line-start="543" data-line-end="552">
+<p class="has-line-data" data-line-start="543" data-line-end="544">Example:</p>
+<pre><code class="has-line-data" data-line-start="546" data-line-end="551">https://mcp.actus.tv/mcp-manifest.json
+https://mcp.actus.tv/mcp-tools-schema.json
+https://mcp.actus.tv/actus_get_transcripts
+https://mcp.actus.tv/actus_get_alerts
+</code></pre>
+</li>
+</ul>
+<p class="has-line-data" data-line-start="552" data-line-end="553">The manifest <strong>must be public</strong> so LLMs can fetch it during registration.</p>
+<hr>
+<h2 class="code-line" data-line-start=556 data-line-end=557 ><a id="5_What_is_the_tools_schema_URL_556"></a><strong>5. What is the <code>tools_schema</code> URL?</strong></h2>
+<ul>
+<li class="has-line-data" data-line-start="558" data-line-end="563">
+<p class="has-line-data" data-line-start="558" data-line-end="559">Inside <code>/mcp-manifest.json</code>, you have this field:</p>
+<pre><code class="has-line-data" data-line-start="561" data-line-end="563" class="language-json">"tools_schema": "https://mcp.actus.tv/mcp-tools-schema.json"
+</code></pre>
+</li>
+<li class="has-line-data" data-line-start="563" data-line-end="564">
+<p class="has-line-data" data-line-start="563" data-line-end="564">This URL points to a <strong>JSON file</strong> describing all your available MCP tools (like <code>actus_get_transcripts</code>, <code>actus_get_alerts</code>).</p>
+</li>
+<li class="has-line-data" data-line-start="564" data-line-end="571">
+<p class="has-line-data" data-line-start="564" data-line-end="565">It’s <strong>the blueprint</strong> that tells the LLM:</p>
+<ul>
+<li class="has-line-data" data-line-start="566" data-line-end="567">Tool names</li>
+<li class="has-line-data" data-line-start="567" data-line-end="568">Parameters</li>
+<li class="has-line-data" data-line-start="568" data-line-end="569">Descriptions</li>
+<li class="has-line-data" data-line-start="569" data-line-end="571">Required fields</li>
+</ul>
+</li>
+</ul>
+<p class="has-line-data" data-line-start="571" data-line-end="572">Think of:</p>
+<ul>
+<li class="has-line-data" data-line-start="573" data-line-end="574"><strong>Manifest</strong> → The “directory” that tells the LLM what’s available.</li>
+<li class="has-line-data" data-line-start="574" data-line-end="576"><strong>Tools schema</strong> → The “instructions” on how to call each tool.</li>
+</ul>
+<hr>
+<h2 class="code-line" data-line-start=578 data-line-end=579 ><a id="6_Local_MongoDB_vs_Public_Server_578"></a><strong>6. Local MongoDB vs Public Server</strong></h2>
+<p class="has-line-data" data-line-start="580" data-line-end="582">You <strong>do not</strong> have to upload your MongoDB to the public server.<br>
+You can:</p>
+<ul>
+<li class="has-line-data" data-line-start="583" data-line-end="584">Host your <strong>MCP server</strong> publicly (HTTPS)</li>
+<li class="has-line-data" data-line-start="584" data-line-end="585">Keep MongoDB <strong>local and private</strong></li>
+<li class="has-line-data" data-line-start="585" data-line-end="587">MCP server makes a <strong>secure internal connection</strong> to MongoDB (e.g., via VPN, SSH tunnel, or direct LAN connection).</li>
+</ul>
+<p class="has-line-data" data-line-start="587" data-line-end="588">So the public MCP server becomes a <strong>gateway</strong>:</p>
+<ul>
+<li class="has-line-data" data-line-start="589" data-line-end="590">Public MCP endpoint (HTTPS)</li>
+<li class="has-line-data" data-line-start="590" data-line-end="591">Internal connection to Actus MongoDB</li>
+<li class="has-line-data" data-line-start="591" data-line-end="593">Filters, queries, and returns JSON to LLM</li>
+</ul>
+<hr>
+<p class="has-line-data" data-line-start="595" data-line-end="596">Gil — if you want, I can <strong>extend the Node.js MCP server code</strong> I gave you earlier so:</p>
+<ul>
+<li class="has-line-data" data-line-start="597" data-line-end="598">It connects securely to <strong>your local MongoDB</strong> (without exposing it directly).</li>
+<li class="has-line-data" data-line-start="598" data-line-end="599">Queries transcripts &amp; alerts from real data.</li>
+<li class="has-line-data" data-line-start="599" data-line-end="601">Still works over HTTPS for ChatGPT/Claude.</li>
+</ul>
+<p class="has-line-data" data-line-start="601" data-line-end="602">That way, your Mongo never leaves your network.</p>
+<p class="has-line-data" data-line-start="603" data-line-end="605">Do you want me to prepare that secure MongoDB-connected MCP server version?<br>
+Alright, I see exactly what you mean now — you want:</p>
+<ol>
+<li class="has-line-data" data-line-start="606" data-line-end="607">A <strong>clear diagram</strong> of how AWS MCP → Local MongoDB works for both VPN and SSH tunnel.</li>
+<li class="has-line-data" data-line-start="607" data-line-end="609">An <strong>answer to “MCP competition”</strong> — how an LLM chooses <em>which</em> MCP server to call if more than one has overlapping capabilities.</li>
+</ol>
+<hr>
+<h2 class="code-line" data-line-start=611 data-line-end=612 ><a id="1_AWS_MCP_to_Local_MongoDB__VPN__SSH_Tunnel_Diagrams_611"></a><strong>1. AWS MCP to Local MongoDB — VPN &amp; SSH Tunnel Diagrams</strong></h2>
+<h3 class="code-line" data-line-start=613 data-line-end=614 ><a id="A_VPN_Tunnel_Approach_613"></a><strong>A. VPN Tunnel Approach</strong></h3>
+<p class="has-line-data" data-line-start="615" data-line-end="616">This is the most “transparent” method — AWS thinks MongoDB is on its own network.</p>
+<pre><code class="has-line-data" data-line-start="618" data-line-end="639">             ┌──────────────────────┐
+             │ AWS (Public MCP)     │
+             │ mcp.actus.tv         │
+             │ Runs Node.js MCP API │
+             └─────────┬────────────┘
+                       │
+              Encrypted VPN Tunnel
+                       │
+┌──────────────────────┴──────────────────────┐
+│ On-Premises Private Network                  │
+│                                              │
+│   ┌─────────────────────┐     ┌───────────┐ │
+│   │ VPN Gateway         │&lt;───&gt;│ AWS VPN   │ │
+│   └─────────────────────┘     └───────────┘ │
+│          │                                   │
+│   ┌──────┴───────────┐                      │
+│   │ Local MongoDB    │                      │
+│   │ 27017 (private)  │                      │
+│   └──────────────────┘                      │
+└──────────────────────────────────────────────┘
+</code></pre>
+<p class="has-line-data" data-line-start="640" data-line-end="641"><strong>Flow:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="642" data-line-end="643">AWS MCP calls <code>mongodb://10.x.x.x:27017</code> (private VPN IP)</li>
+<li class="has-line-data" data-line-start="643" data-line-end="644">VPN encrypts all traffic</li>
+<li class="has-line-data" data-line-start="644" data-line-end="646">No internet exposure for Mongo</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=648 data-line-end=649 ><a id="B_SSH_Tunnel_Approach_648"></a><strong>B. SSH Tunnel Approach</strong></h3>
+<p class="has-line-data" data-line-start="650" data-line-end="651">This is more manual — you set up a TCP tunnel for MongoDB.</p>
+<pre><code class="has-line-data" data-line-start="653" data-line-end="672">             ┌──────────────────────┐
+             │ AWS (Public MCP)     │
+             │ mcp.actus.tv         │
+             │ Runs Node.js MCP API │
+             └─────────┬────────────┘
+                       │
+                       │ SSH Tunnel
+                       ▼
+             ┌──────────────────────┐
+             │ SSH Gateway Server   │  (On-Prem)
+             │ Accepts SSH from AWS │
+             └─────────┬────────────┘
+                       │
+                       ▼
+             ┌──────────────────────┐
+             │ Local MongoDB         │
+             │ 27017 (private)       │
+             └──────────────────────┘
+</code></pre>
+<p class="has-line-data" data-line-start="673" data-line-end="674"><strong>Setup example:</strong></p>
+<pre><code class="has-line-data" data-line-start="676" data-line-end="679" class="language-bash"><span class="hljs-comment"># Run on AWS MCP host</span>
+ssh -N -L <span class="hljs-number">27017</span>:localhost:<span class="hljs-number">27017</span> user@onprem-ip
+</code></pre>
+<p class="has-line-data" data-line-start="680" data-line-end="681">Then in Node.js:</p>
+<pre><code class="has-line-data" data-line-start="683" data-line-end="685" class="language-js">MongoClient.connect(<span class="hljs-string">"mongodb://localhost:27017"</span>);
+</code></pre>
+<ul>
+<li class="has-line-data" data-line-start="686" data-line-end="687">Tunnel encrypts the traffic</li>
+<li class="has-line-data" data-line-start="687" data-line-end="689">Mongo still not exposed publicly</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=691 data-line-end=692 ><a id="Which_Should_You_Choose_691"></a>Which Should You Choose?</h3>
+<ul>
+<li class="has-line-data" data-line-start="693" data-line-end="694"><strong>VPN</strong> = Always-on, stable, good for production</li>
+<li class="has-line-data" data-line-start="694" data-line-end="696"><strong>SSH Tunnel</strong> = Quick to set up, but more fragile if the connection drops</li>
+</ul>
+<hr>
+<h2 class="code-line" data-line-start=698 data-line-end=699 ><a id="2_Which_MCP_Does_the_LLM_Choose_if_Multiple_Servers_Offer_Similar_Tools_698"></a><strong>2. Which MCP Does the LLM Choose if Multiple Servers Offer Similar Tools?</strong></h2>
+<p class="has-line-data" data-line-start="700" data-line-end="701">If the LLM is connected to <strong>multiple MCP servers</strong> with overlapping tool names/descriptions (e.g., both Actus and another company offer <code>get_transcripts</code>), the choice depends on:</p>
+<ol>
+<li class="has-line-data" data-line-start="702" data-line-end="707">
+<p class="has-line-data" data-line-start="702" data-line-end="703"><strong>Tool Descriptions</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="704" data-line-end="705">The LLM compares the <em>descriptions</em> in each <code>tools_schema.json</code> to the user query.</li>
+<li class="has-line-data" data-line-start="705" data-line-end="707">If your description matches the user’s intent more closely (“TV and radio broadcast transcripts from monitored channels”) vs. a generic one, the LLM will prefer yours.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="707" data-line-end="713">
+<p class="has-line-data" data-line-start="707" data-line-end="708"><strong>Registration Priority</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="709" data-line-end="710">In ChatGPT and Claude, the MCP <strong>client</strong> (user’s configuration) decides which MCPs are active.</li>
+<li class="has-line-data" data-line-start="710" data-line-end="711">If the user <strong>only registers your MCP</strong> → you’re the only option.</li>
+<li class="has-line-data" data-line-start="711" data-line-end="713">If they register two → the model decides based on semantic matching.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="713" data-line-end="717">
+<p class="has-line-data" data-line-start="713" data-line-end="714"><strong>Parameter Fit</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="715" data-line-end="717">If your tool parameters fit the query exactly (e.g., you have <code>channel</code>, <code>start_time</code>), the LLM tends to choose yours.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="717" data-line-end="722">
+<p class="has-line-data" data-line-start="717" data-line-end="718"><strong>Name Collision Rules</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="719" data-line-end="720">If two tools have <strong>exact same name</strong>, some MCP clients might namespace them internally (e.g., <code>actus.get_transcripts</code> vs <code>other.get_transcripts</code>).</li>
+<li class="has-line-data" data-line-start="720" data-line-end="722">Then the LLM can call either explicitly.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p class="has-line-data" data-line-start="724" data-line-end="727">💡 <strong>Bottom line</strong><br>
+The LLM does <strong>not</strong> go out to the open internet to “pick a provider” — it only calls tools for MCPs that are <strong>already registered in the client’s settings</strong>.<br>
+If two MCPs are registered, selection is based on <strong>semantic matching of tool descriptions to the user’s request</strong>.</p>
+<hr>
+<p class="has-line-data" data-line-start="730" data-line-end="731">Gil — I can make <strong>a “conflict-proof” manifest &amp; schema</strong> for you, so even if another MCP is also connected, the LLM will strongly lean toward yours for broadcast-related queries. This would include:</p>
+<ul>
+<li class="has-line-data" data-line-start="732" data-line-end="733">Highly specific descriptions</li>
+<li class="has-line-data" data-line-start="733" data-line-end="734">Domain-specific parameter names (like <code>broadcast_channel</code> instead of generic <code>channel</code>)</li>
+<li class="has-line-data" data-line-start="734" data-line-end="736">Example queries in the schema to “train” the LLM on when to use your tools</li>
+</ul>
+<p class="has-line-data" data-line-start="736" data-line-end="738">Do you want me to make that tuned manifest so you win the “MCP competition”?<br>
+Alright, I see exactly what you mean now — you want:</p>
+<ol>
+<li class="has-line-data" data-line-start="739" data-line-end="740">A <strong>clear diagram</strong> of how AWS MCP → Local MongoDB works for both VPN and SSH tunnel.</li>
+<li class="has-line-data" data-line-start="740" data-line-end="742">An <strong>answer to “MCP competition”</strong> — how an LLM chooses <em>which</em> MCP server to call if more than one has overlapping capabilities.</li>
+</ol>
+<hr>
+<h2 class="code-line" data-line-start=744 data-line-end=745 ><a id="1_AWS_MCP_to_Local_MongoDB__VPN__SSH_Tunnel_Diagrams_744"></a><strong>1. AWS MCP to Local MongoDB — VPN &amp; SSH Tunnel Diagrams</strong></h2>
+<h3 class="code-line" data-line-start=746 data-line-end=747 ><a id="A_VPN_Tunnel_Approach_746"></a><strong>A. VPN Tunnel Approach</strong></h3>
+<p class="has-line-data" data-line-start="748" data-line-end="749">This is the most “transparent” method — AWS thinks MongoDB is on its own network.</p>
+<pre><code class="has-line-data" data-line-start="751" data-line-end="772">             ┌──────────────────────┐
+             │ AWS (Public MCP)     │
+             │ mcp.actus.tv         │
+             │ Runs Node.js MCP API │
+             └─────────┬────────────┘
+                       │
+              Encrypted VPN Tunnel
+                       │
+┌──────────────────────┴──────────────────────┐
+│ On-Premises Private Network                  │
+│                                              │
+│   ┌─────────────────────┐     ┌───────────┐ │
+│   │ VPN Gateway         │&lt;───&gt;│ AWS VPN   │ │
+│   └─────────────────────┘     └───────────┘ │
+│          │                                   │
+│   ┌──────┴───────────┐                      │
+│   │ Local MongoDB    │                      │
+│   │ 27017 (private)  │                      │
+│   └──────────────────┘                      │
+└──────────────────────────────────────────────┘
+</code></pre>
+<p class="has-line-data" data-line-start="773" data-line-end="774"><strong>Flow:</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="775" data-line-end="776">AWS MCP calls <code>mongodb://10.x.x.x:27017</code> (private VPN IP)</li>
+<li class="has-line-data" data-line-start="776" data-line-end="777">VPN encrypts all traffic</li>
+<li class="has-line-data" data-line-start="777" data-line-end="779">No internet exposure for Mongo</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=781 data-line-end=782 ><a id="B_SSH_Tunnel_Approach_781"></a><strong>B. SSH Tunnel Approach</strong></h3>
+<p class="has-line-data" data-line-start="783" data-line-end="784">This is more manual — you set up a TCP tunnel for MongoDB.</p>
+<pre><code class="has-line-data" data-line-start="786" data-line-end="805">             ┌──────────────────────┐
+             │ AWS (Public MCP)     │
+             │ mcp.actus.tv         │
+             │ Runs Node.js MCP API │
+             └─────────┬────────────┘
+                       │
+                       │ SSH Tunnel
+                       ▼
+             ┌──────────────────────┐
+             │ SSH Gateway Server   │  (On-Prem)
+             │ Accepts SSH from AWS │
+             └─────────┬────────────┘
+                       │
+                       ▼
+             ┌──────────────────────┐
+             │ Local MongoDB         │
+             │ 27017 (private)       │
+             └──────────────────────┘
+</code></pre>
+<p class="has-line-data" data-line-start="806" data-line-end="807"><strong>Setup example:</strong></p>
+<pre><code class="has-line-data" data-line-start="809" data-line-end="812" class="language-bash"><span class="hljs-comment"># Run on AWS MCP host</span>
+ssh -N -L <span class="hljs-number">27017</span>:localhost:<span class="hljs-number">27017</span> user@onprem-ip
+</code></pre>
+<p class="has-line-data" data-line-start="813" data-line-end="814">Then in Node.js:</p>
+<pre><code class="has-line-data" data-line-start="816" data-line-end="818" class="language-js">MongoClient.connect(<span class="hljs-string">"mongodb://localhost:27017"</span>);
+</code></pre>
+<ul>
+<li class="has-line-data" data-line-start="819" data-line-end="820">Tunnel encrypts the traffic</li>
+<li class="has-line-data" data-line-start="820" data-line-end="822">Mongo still not exposed publicly</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=824 data-line-end=825 ><a id="Which_Should_You_Choose_824"></a>Which Should You Choose?</h3>
+<ul>
+<li class="has-line-data" data-line-start="826" data-line-end="827"><strong>VPN</strong> = Always-on, stable, good for production</li>
+<li class="has-line-data" data-line-start="827" data-line-end="829"><strong>SSH Tunnel</strong> = Quick to set up, but more fragile if the connection drops</li>
+</ul>
+<hr>
+<h2 class="code-line" data-line-start=831 data-line-end=832 ><a id="2_Which_MCP_Does_the_LLM_Choose_if_Multiple_Servers_Offer_Similar_Tools_831"></a><strong>2. Which MCP Does the LLM Choose if Multiple Servers Offer Similar Tools?</strong></h2>
+<p class="has-line-data" data-line-start="833" data-line-end="834">If the LLM is connected to <strong>multiple MCP servers</strong> with overlapping tool names/descriptions (e.g., both Actus and another company offer <code>get_transcripts</code>), the choice depends on:</p>
+<ol>
+<li class="has-line-data" data-line-start="835" data-line-end="840">
+<p class="has-line-data" data-line-start="835" data-line-end="836"><strong>Tool Descriptions</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="837" data-line-end="838">The LLM compares the <em>descriptions</em> in each <code>tools_schema.json</code> to the user query.</li>
+<li class="has-line-data" data-line-start="838" data-line-end="840">If your description matches the user’s intent more closely (“TV and radio broadcast transcripts from monitored channels”) vs. a generic one, the LLM will prefer yours.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="840" data-line-end="846">
+<p class="has-line-data" data-line-start="840" data-line-end="841"><strong>Registration Priority</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="842" data-line-end="843">In ChatGPT and Claude, the MCP <strong>client</strong> (user’s configuration) decides which MCPs are active.</li>
+<li class="has-line-data" data-line-start="843" data-line-end="844">If the user <strong>only registers your MCP</strong> → you’re the only option.</li>
+<li class="has-line-data" data-line-start="844" data-line-end="846">If they register two → the model decides based on semantic matching.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="846" data-line-end="850">
+<p class="has-line-data" data-line-start="846" data-line-end="847"><strong>Parameter Fit</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="848" data-line-end="850">If your tool parameters fit the query exactly (e.g., you have <code>channel</code>, <code>start_time</code>), the LLM tends to choose yours.</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="850" data-line-end="855">
+<p class="has-line-data" data-line-start="850" data-line-end="851"><strong>Name Collision Rules</strong></p>
+<ul>
+<li class="has-line-data" data-line-start="852" data-line-end="853">If two tools have <strong>exact same name</strong>, some MCP clients might namespace them internally (e.g., <code>actus.get_transcripts</code> vs <code>other.get_transcripts</code>).</li>
+<li class="has-line-data" data-line-start="853" data-line-end="855">Then the LLM can call either explicitly.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p class="has-line-data" data-line-start="857" data-line-end="860">💡 <strong>Bottom line</strong><br>
+The LLM does <strong>not</strong> go out to the open internet to “pick a provider” — it only calls tools for MCPs that are <strong>already registered in the client’s settings</strong>.<br>
+If two MCPs are registered, selection is based on <strong>semantic matching of tool descriptions to the user’s request</strong>.</p>
+<hr>
+<p class="has-line-data" data-line-start="863" data-line-end="864">Gil — I can make <strong>a “conflict-proof” manifest &amp; schema</strong> for you, so even if another MCP is also connected, the LLM will strongly lean toward yours for broadcast-related queries. This would include:</p>
+<ul>
+<li class="has-line-data" data-line-start="865" data-line-end="866">Highly specific descriptions</li>
+<li class="has-line-data" data-line-start="866" data-line-end="867">Domain-specific parameter names (like <code>broadcast_channel</code> instead of generic <code>channel</code>)</li>
+<li class="has-line-data" data-line-start="867" data-line-end="869">Example queries in the schema to “train” the LLM on when to use your tools</li>
+</ul>
+<p class="has-line-data" data-line-start="869" data-line-end="870">Do you want me to make that tuned manifest so you win the “MCP competition”?</p>
+<p class="has-line-data" data-line-start="871" data-line-end="872">Alright Gil — let’s slow this way down and walk through it step-by-step, like we were wiring up two physical offices together.</p>
+<p class="has-line-data" data-line-start="873" data-line-end="874">We’ll do <strong>VPN first</strong>, then <strong>SSH tunnel</strong>, and we’ll clear up <em>exactly</em> how AWS can talk to something that’s on a private IP.</p>
+<hr>
+<h2 class="code-line" data-line-start=877 data-line-end=878 ><a id="1_VPN_Approach__How_AWS_Sees_Your_Local_MongoDB_877"></a><strong>1. VPN Approach — How AWS Sees Your Local MongoDB</strong></h2>
+<h3 class="code-line" data-line-start=879 data-line-end=880 ><a id="The_core_idea_879"></a>The core idea</h3>
+<p class="has-line-data" data-line-start="881" data-line-end="883">A <strong>VPN (Virtual Private Network)</strong> is like running a long, secure network cable between your AWS server and your office’s LAN.<br>
+Once connected, AWS can “see” your local machines’ private IPs (like <code>10.x.x.x</code> or <code>192.168.x.x</code>) as if it were physically inside your building.</p>
+<hr>
+<h3 class="code-line" data-line-start=886 data-line-end=887 ><a id="How_the_AWS_MCP_server_accesses_mongodb10xxx27017_886"></a>How the AWS MCP server accesses <code>mongodb://10.x.x.x:27017</code></h3>
+<ol>
+<li class="has-line-data" data-line-start="888" data-line-end="889">
+<p class="has-line-data" data-line-start="888" data-line-end="889">Your <strong>company network</strong> probably already has private IP addresses for internal machines (MongoDB server is one of them).</p>
+</li>
+<li class="has-line-data" data-line-start="889" data-line-end="890">
+<p class="has-line-data" data-line-start="889" data-line-end="890">You set up a <strong>VPN gateway</strong> in AWS <strong>and</strong> a VPN gateway on your office network (this might be on a firewall/router or a dedicated box).</p>
+</li>
+<li class="has-line-data" data-line-start="890" data-line-end="891">
+<p class="has-line-data" data-line-start="890" data-line-end="891">The gateways <strong>authenticate</strong> to each other and encrypt all traffic between them.</p>
+</li>
+<li class="has-line-data" data-line-start="891" data-line-end="897">
+<p class="has-line-data" data-line-start="891" data-line-end="892">Once connected:</p>
+<ul>
+<li class="has-line-data" data-line-start="893" data-line-end="894">AWS gets a <strong>route</strong> to your private network (e.g., “if you want <code>10.0.5.23</code>, send it through the VPN”).</li>
+<li class="has-line-data" data-line-start="894" data-line-end="895">Your AWS Node.js MCP server can now connect to <code>mongodb://10.0.5.23:27017</code> directly.</li>
+<li class="has-line-data" data-line-start="895" data-line-end="897">That traffic flows securely over the VPN tunnel to your office.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 class="code-line" data-line-start=899 data-line-end=900 ><a id="Who_sets_it_up_899"></a>Who sets it up?</h3>
+<ul>
+<li class="has-line-data" data-line-start="901" data-line-end="902">In almost all companies, <strong>IT or DevOps</strong> sets up the VPN gateway.</li>
+<li class="has-line-data" data-line-start="902" data-line-end="904">As a programmer, you generally <strong>don’t</strong> set up the network hardware, but once it’s in place, you can write code that uses those private IPs.</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=906 data-line-end=907 ><a id="Typical_steps_for_IT_906"></a>Typical steps for IT:</h3>
+<ul>
+<li class="has-line-data" data-line-start="908" data-line-end="909">Create a <strong>Site-to-Site VPN</strong> in AWS VPC.</li>
+<li class="has-line-data" data-line-start="909" data-line-end="910">Configure your office’s firewall/router to accept that VPN.</li>
+<li class="has-line-data" data-line-start="910" data-line-end="912">Add route tables so AWS knows “10.0.x.x” is reachable via VPN.</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=914 data-line-end=915 ><a id="Diagram_914"></a>Diagram</h3>
+<pre><code class="has-line-data" data-line-start="917" data-line-end="935">        AWS VPC (Public MCP Server)
+           IP: 54.x.x.x
+        ┌────────────────────────┐
+        │  Node.js MCP Server    │
+        │  (MongoDB Client)      │
+        └──────────┬─────────────┘
+                   │
+         VPN Tunnel│(Encrypted)
+                   ▼
+        ┌────────────────────────┐
+        │Office VPN Gateway/Router│
+        └──────────┬─────────────┘
+                   │
+             ┌─────▼─────┐
+             │ MongoDB    │
+             │ 10.0.5.23  │
+             └────────────┘
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=938 data-line-end=939 ><a id="2_SSH_Tunnel_Approach__Port_Forwarding_to_Mongo_938"></a><strong>2. SSH Tunnel Approach — Port Forwarding to Mongo</strong></h2>
+<h3 class="code-line" data-line-start=940 data-line-end=941 ><a id="The_core_idea_940"></a>The core idea</h3>
+<p class="has-line-data" data-line-start="942" data-line-end="944">An <strong>SSH tunnel</strong> is like a <strong>one-lane secret pipe</strong> between AWS and a machine on your office network.<br>
+Instead of “opening” your whole LAN to AWS, you forward just <strong>one port</strong> (Mongo’s 27017) from AWS → Local Mongo.</p>
+<hr>
+<h3 class="code-line" data-line-start=947 data-line-end=948 ><a id="How_AWS_accesses_Mongo_through_SSH_947"></a>How AWS accesses Mongo through SSH</h3>
+<ol>
+<li class="has-line-data" data-line-start="949" data-line-end="953">
+<p class="has-line-data" data-line-start="949" data-line-end="950">You have <strong>some machine on your local network</strong> that can:</p>
+<ul>
+<li class="has-line-data" data-line-start="951" data-line-end="952">Connect to Mongo</li>
+<li class="has-line-data" data-line-start="952" data-line-end="953">Accept incoming SSH from AWS</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="953" data-line-end="962">
+<p class="has-line-data" data-line-start="953" data-line-end="954">On the AWS server, you run:</p>
+<pre><code class="has-line-data" data-line-start="956" data-line-end="958" class="language-bash">ssh -N -L <span class="hljs-number">27017</span>:localhost:<span class="hljs-number">27017</span> user@onprem-ip
+</code></pre>
+<ul>
+<li class="has-line-data" data-line-start="959" data-line-end="962">
+<p class="has-line-data" data-line-start="959" data-line-end="960"><code>-L 27017:localhost:27017</code> means:</p>
+<ul>
+<li class="has-line-data" data-line-start="961" data-line-end="962">“When I connect to <strong>AWS localhost:27017</strong>, secretly forward it to <strong>onprem-ip:27017</strong>.”</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="has-line-data" data-line-start="962" data-line-end="970">
+<p class="has-line-data" data-line-start="962" data-line-end="963">Now your Node.js code on AWS connects to:</p>
+<pre><code class="has-line-data" data-line-start="965" data-line-end="967" class="language-js">MongoClient.connect(<span class="hljs-string">"mongodb://localhost:27017"</span>);
+</code></pre>
+<p class="has-line-data" data-line-start="968" data-line-end="969">but that actually flows through the SSH tunnel into your office and reaches MongoDB.</p>
+</li>
+</ol>
+<hr>
+<h3 class="code-line" data-line-start=972 data-line-end=973 ><a id="Who_sets_it_up_972"></a>Who sets it up?</h3>
+<ul>
+<li class="has-line-data" data-line-start="974" data-line-end="975">
+<p class="has-line-data" data-line-start="974" data-line-end="975">You <strong>can</strong> set this up as a programmer (you just need SSH access to a machine inside your company network).</p>
+</li>
+<li class="has-line-data" data-line-start="975" data-line-end="980">
+<p class="has-line-data" data-line-start="975" data-line-end="976">You don’t necessarily need IT unless:</p>
+<ul>
+<li class="has-line-data" data-line-start="977" data-line-end="978">Firewalls block SSH</li>
+<li class="has-line-data" data-line-start="978" data-line-end="980">You need a dedicated always-on tunnel (then IT can automate it)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 class="code-line" data-line-start=982 data-line-end=983 ><a id="Diagram_982"></a>Diagram</h3>
+<pre><code class="has-line-data" data-line-start="985" data-line-end="1005">AWS MCP Server
+(54.x.x.x)
+┌────────────────────────┐
+│ Node.js MCP Server     │
+│ mongo://localhost:27017│
+└──────────┬─────────────┘
+           │
+     SSH Tunnel (Port 27017)
+           │
+           ▼
+┌────────────────────────┐
+│ Local SSH Gateway      │
+│ (Can reach Mongo)      │
+└──────────┬─────────────┘
+           │
+     ┌─────▼─────┐
+     │ MongoDB    │
+     │ 10.0.5.23  │
+     └────────────┘
+</code></pre>
+<hr>
+<h2 class="code-line" data-line-start=1008 data-line-end=1009 ><a id="VPN_vs_SSH_Tunnel__Practical_Differences_1008"></a><strong>VPN vs SSH Tunnel — Practical Differences</strong></h2>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Feature</th>
+<th>VPN</th>
+<th>SSH Tunnel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scope</td>
+<td>Whole network</td>
+<td>One port/service</td>
+</tr>
+<tr>
+<td>Always-on</td>
+<td>Yes</td>
+<td>Needs to be maintained manually</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>High (LAN-like)</td>
+<td>Slightly slower (one connection)</td>
+</tr>
+<tr>
+<td>Setup complexity</td>
+<td>Higher (needs IT + network config)</td>
+<td>Lower (you can do it if you have SSH)</td>
+</tr>
+<tr>
+<td>Security scope</td>
+<td>Broader (all private IPs exposed)</td>
+<td>Narrow (only Mongo’s port exposed)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p class="has-line-data" data-line-start="1020" data-line-end="1021">If you want, I can <strong>adapt the Node.js MCP server code</strong> I gave you so it will <strong>work seamlessly with either a VPN or SSH tunnel</strong>, and I’ll add a section to the README explaining exactly how to test if AWS can reach the private Mongo before running the app.</p>
+<p class="has-line-data" data-line-start="1022" data-line-end="1023">Do you want me to prepare that version next?</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body></html>
