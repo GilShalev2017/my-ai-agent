@@ -21,7 +21,7 @@ namespace ActusAgentService.Controllers
         private readonly IContentService _contentService;
 
         public QueryController(IEntityExtractor entityExtractor,
-                               IDateNormalizer dateNormalizer,
+                              // IDateNormalizer dateNormalizer,
                                IPlanGenerator planGenerator,
                                IPromptComposer promptComposer,
                                IOpenAiService openAiService,
@@ -100,6 +100,15 @@ namespace ActusAgentService.Controllers
         }
     }
 }
+
+
+
+
+
+
+
+
+
 //OPTION A WITH EMEDDING
 /*
 var transcripts = await _contentService.LoadAllTranscriptsAsync();

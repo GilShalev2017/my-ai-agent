@@ -16,18 +16,52 @@ namespace ActusAgentService.Services
     public class EntityExtractor : IEntityExtractor
     {
         private readonly IOpenAiService _openAiService;
-        private readonly IDateNormalizer _dateNormalizer;
+        //private readonly IDateNormalizer _dateNormalizer;
 
-        public EntityExtractor(IOpenAiService openAiService, IDateNormalizer dateNormalizer)
+        public EntityExtractor(IOpenAiService openAiService)//, IDateNormalizer dateNormalizer)
         {
             _openAiService = openAiService;
-            _dateNormalizer = dateNormalizer;
+            //_dateNormalizer = dateNormalizer;
         }
 
         public async Task<QueryIntentContext> ExtractAsync(string userQuery)
         {
+//            var systemPrompt = @$"
+//You are a smart assistant. Analyze the following user query and extract:
+
+//- intents: list of strings.
+//- entities: list of objects with 'entity' and 'type'.
+//- dates: list of objects with this exact schema:
+//  - If the date is a single point in time:
+//    {{
+//      ""date"": ""yyyy-MM-dd"",
+//      ""type"": ""single"",
+//      ""startTime"": ""HH:mm:ss"" (optional),
+//      ""endTime"": ""HH:mm:ss"" (optional)
+//    }}
+//  - If the date is a range:
+//    {{
+//      ""type"": ""date_range"",
+//      ""startDate"": ""yyyy-MM-dd"",
+//      ""endDate"": ""yyyy-MM-dd"",
+//      ""startTime"": ""HH:mm:ss"" (optional),
+//      ""endTime"": ""HH:mm:ss"" (optional)
+//    }}
+
+//- sources: list of objects with 'source' and 'type'.
+
+//Rules:
+//- Use current year ({DateTime.UtcNow.Year}) if the year is not provided.
+//- Always follow the above structure exactly.
+//- Always include startDate and endDate if type is ""date_range"".
+
+//Return only valid JSON. No comments, no extra text.
+
+//User query: ""{userQuery}""
+//";
             var systemPrompt = @$"
-You are a smart assistant. Analyze the following user query and extract:
+You are a smart assistant. Today's date is {DateTime.UtcNow:yyyy-MM-dd}. 
+Analyze the following user query and extract:
 
 - intents: list of strings.
 - entities: list of objects with 'entity' and 'type'.
@@ -51,14 +85,15 @@ You are a smart assistant. Analyze the following user query and extract:
 - sources: list of objects with 'source' and 'type'.
 
 Rules:
-- Use current year ({DateTime.UtcNow.Year}) if the year is not provided.
+- Use today's date ({DateTime.UtcNow:yyyy-MM-dd}) as the reference point for interpreting relative dates such as 'yesterday', 'last day', 'last week', etc.
+- If the year is missing, use the current year ({DateTime.UtcNow.Year}).
 - Always follow the above structure exactly.
 - Always include startDate and endDate if type is ""date_range"".
-
-Return only valid JSON. No comments, no extra text.
+- Return only valid JSON. No comments, no extra text.
 
 User query: ""{userQuery}""
 ";
+
 
             var jsonResponse = await _openAiService.GetChatCompletionAsync("You are a helpful media assistant.",systemPrompt);
 

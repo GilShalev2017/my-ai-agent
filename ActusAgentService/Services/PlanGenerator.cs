@@ -144,6 +144,7 @@ namespace ActusAgentService.Services
             List<JobResult> relevantTranscripts;
 
             // This is the core logic. You decide based on a semantic query or keywords
+            /*
             if (!string.IsNullOrWhiteSpace(context.OriginalQuery))
             {
                 // Use vector search if a semantic query is present
@@ -155,7 +156,11 @@ namespace ActusAgentService.Services
                 // Here you might need a different method on IContentService
                 // I've added one below for clarity
                 relevantTranscripts = await _contentService.GetFilteredTranscriptsAsync(filter);
-            }
+            }*/
+
+            relevantTranscripts = await _contentService.GetTranscriptsBySemanticSearchAndDateAsync(context.OriginalQuery, filter);
+
+            //relevantTranscripts = await _contentService.GetFilteredTranscriptsAsync(filter);
 
             if (!relevantTranscripts.Any())
             {

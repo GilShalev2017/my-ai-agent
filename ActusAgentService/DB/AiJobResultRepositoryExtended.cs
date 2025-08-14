@@ -3,6 +3,7 @@ using ActusAgentService.Models.ActIntelligence;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ActusAgentService.DB
@@ -360,14 +361,9 @@ namespace ActusAgentService.DB
         }
         public async Task<List<JobResult>> GetJobResultsByIdsAsync(IEnumerable<string> mongoIds)
         {
-            // Validate input
-            if (mongoIds == null || !mongoIds.Any())
-            {
-                return new List<JobResult>(); // Return an empty list if no IDs are provided
-            }
-
-            // Fetch job results from the MongoDB collection
-            var jobResults = await _aiJobResultCollection.Find(job => mongoIds.Contains(job.Id)).ToListAsync();
+            var objectIds = mongoIds.Select(ObjectId.Parse).ToList();
+            var filter = Builders<JobResult>.Filter.In("_id", objectIds);
+            var jobResults = await _aiJobResultCollection.Find(filter).ToListAsync();
             return jobResults;
         }
     }

@@ -18,8 +18,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IAiJobResultRepositoryExtended, AiJobResultRepositoryExtended>();
 builder.Services.AddScoped<IEntityExtractor, EntityExtractor>();
-builder.Services.AddSingleton<IDateNormalizer, DateNormalizer>();
+
+//builder.Services.AddSingleton<IDateNormalizer, DateNormalizer>();
+
 builder.Services.AddScoped<IEmbeddingProvider, EmbeddingProvider>();
+builder.Services.AddScoped<IVectorDBRepository, VectorDBRepository>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IPlanGenerator, PlanGenerator>();
 builder.Services.AddSingleton<IPromptComposer, PromptComposer>();
