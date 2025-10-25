@@ -55,7 +55,8 @@ namespace ActusAgentService.Services
                 // The vector DB handles both semantic similarity and date filtering efficiently
                 
                 //var mongoIds = await _vectorDbRepository.SearchSimilarAsync(queryVector, filter, topK: 20);
-                var mongoIds = await _vectorDbRepository.SearchSimilarAsyncWithDateTimeStrings(queryVector, filter, topK: 20); //if dates in the DB is string format
+                var mongoIds = await _vectorDbRepository.SearchSimilarAsyncWithDateTimeStrings(queryVector, filter, topK: 50); //if dates in the DB is string format
+              
                 var distinctMongoIds = mongoIds.Distinct().ToList();
 
                 if (!distinctMongoIds.Any())
